@@ -1,0 +1,4 @@
+#pragma once
+
+#define LG_OPENGL_VERSION_MAJOR 3
+#define LG_OPENGL_VERSION_MINOR 3
