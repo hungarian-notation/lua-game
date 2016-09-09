@@ -18,6 +18,11 @@ namespace luagame {
 
 		mesh_node(mesh * mesh) : mesh(mesh) {
 			_notnull(mesh);
+			this->mesh->acquire();
+		}
+
+		~mesh_node() override {
+			this->mesh->release();
 		}
 
 		virtual node_type type() { return node_type::mesh_node_type; }

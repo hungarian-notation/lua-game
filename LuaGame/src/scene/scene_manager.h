@@ -12,7 +12,7 @@ namespace luagame {
 	class scene_manager : virtual public reference_counted {
 	public:
 
-		scene_manager() : root_node(this) {}
+		scene_manager(graphics_context * context) : context(context), root_node(this) {}
 
 		virtual ~scene_manager() {}
 
@@ -29,7 +29,7 @@ namespace luagame {
 		scene_node * root() {
 			return &root_node;
 		}
-		
+
 		camera_node * camera() {
 			return camera_node;
 		}
@@ -61,7 +61,7 @@ namespace luagame {
 				mesh_node->get_material()->bind();
 
 				material::program_targets targets = mtl->get_targets();
-			
+
 				glUniformMatrix4fv(targets.model_uni, 1, GL_FALSE, (GLfloat *)(&model));
 				glUniformMatrix4fv(targets.view_uni, 1, GL_FALSE, (GLfloat *)(&view));
 				glUniformMatrix4fv(targets.proj_uni, 1, GL_FALSE, (GLfloat *)(&projection));
@@ -69,7 +69,7 @@ namespace luagame {
 				mesh_node->get_mesh()->bind();
 
 				if (mtl->opts().use_texture && tex) tex->bind();
-				
+
 				glDrawArrays(GL_TRIANGLES, 0, mesh_node->get_mesh()->size());
 			}
 
@@ -79,6 +79,7 @@ namespace luagame {
 
 	private:
 
+		graphics_context * context;
 		scene_node		root_node;
 		camera_node *	camera_node;
 

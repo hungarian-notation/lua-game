@@ -3,11 +3,7 @@
 #include "conf.h"
 #include "gl_headers.h"
 
-#include <iostream>
 #include <stdexcept>
-#include <string>
-
-#include <lua53\lua.hpp>
 
 #ifdef _DEBUG
 #include <intrin.h>

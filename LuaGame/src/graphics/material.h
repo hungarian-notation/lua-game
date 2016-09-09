@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common.h"
+#include "../gl_headers.h"
 
 #include <sstream>
 #include <fstream>

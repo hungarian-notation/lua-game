@@ -15,8 +15,6 @@ namespace luagame {
 
 	public:
 
-		scene_manager * get_scene();
-
 		void poll_events();
 
 		void clear() {
@@ -40,8 +38,6 @@ namespace luagame {
 	private:
 
 		GLFWwindow * glfw_window;
-
-		scene_manager * scene;
 
 	};
 }

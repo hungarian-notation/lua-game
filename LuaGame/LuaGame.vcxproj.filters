@@ -57,6 +57,9 @@
     <ClCompile Include="src\graphics\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\interface\lua_interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\util\any_key.h">
@@ -125,11 +128,15 @@
     <ClInclude Include="src\graphics\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\interface\lua_interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="architecture.md" />
     <None Include="vertex.glsl" />
     <None Include="fragment.glsl" />
+    <None Include="binding\init.lua" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img_test.png">

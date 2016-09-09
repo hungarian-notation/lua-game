@@ -28,18 +28,9 @@ luagame::graphics_context::graphics_context(int width, int height, const char * 
 }
 
 luagame::graphics_context::~graphics_context() {
-	if (scene) {
-		if (!scene->release()) _err("graphics context did not hold last reference to scene");
-	}
-
 	glfwTerminate();
 
 	_log("terminated glfw");
-}
-
-luagame::scene_manager * luagame::graphics_context::get_scene() {
-	if (!scene) scene = new scene_manager();
-	return scene;
 }
 
 void luagame::graphics_context::poll_events() {

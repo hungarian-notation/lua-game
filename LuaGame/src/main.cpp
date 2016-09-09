@@ -27,7 +27,7 @@ int main() {
 
 	graphics->set_title("This is my title!");
 
-	luagame::scene_manager * scene = graphics->get_scene();
+	luagame::scene_manager * scene = new luagame::scene_manager(graphics);
 
 	luagame::mesh * mesh = new luagame::mesh;
 
@@ -88,6 +88,7 @@ int main() {
 		scene->add(models[i]);
 	}
 
+	mesh->release();
 	scene->set_camera(&camera);
 
 	float rot = 0.01;
@@ -107,7 +108,7 @@ int main() {
 		models[i]->release();
 	}
 
-	mesh->release();
+	scene->release();
 	graphics->release();
 
 	return 0;
