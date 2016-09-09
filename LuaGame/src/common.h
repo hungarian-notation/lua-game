@@ -24,4 +24,3 @@ bool _trace(char *format, ...);
 #endif
 
 #include "reference_counted.h"
-#include "graphics\vertex.h"

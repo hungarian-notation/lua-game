@@ -73,12 +73,14 @@
     <LibraryPath>$(ProjectDir)lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_4</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_4</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,7 +91,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries> /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBCMT"</IgnoreSpecificDefaultLibraries>
@@ -113,7 +115,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries> /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBCMT"</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -136,9 +138,10 @@
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\shader_loader.cpp" />
-    <ClCompile Include="src\interface\lua_interface.cpp" />
-    <ClCompile Include="src\scene\camera_node.cpp" />
-    <ClCompile Include="src\scene\scene_node.cpp" />
+    <ClCompile Include="src\binding\luagame_module.cpp" />
+    <ClCompile Include="src\binding\binding.cpp" />
+    <ClCompile Include="src\scene_graph\camera_node.cpp" />
+    <ClCompile Include="src\scene_graph\scene_node.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\soil\image_DXT.c" />
     <ClCompile Include="src\soil\image_helper.c" />
@@ -148,19 +151,22 @@
     <ClCompile Include="src\graphics\graphics_context.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\binding\binding_conf.h" />
+    <ClInclude Include="src\binding\luagame_module.h" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
     <ClInclude Include="src\graphics\shader_loader.h" />
-    <ClInclude Include="src\interface\lua_interface.h" />
-    <ClInclude Include="src\scene\camera_node.h" />
-    <ClInclude Include="src\scene\mesh_node.h" />
-    <ClInclude Include="src\scene\scene_node.h" />
+    <ClInclude Include="src\graphics\transform.h" />
+    <ClInclude Include="src\binding\binding.h" />
+    <ClInclude Include="src\scene_graph\camera_node.h" />
+    <ClInclude Include="src\scene_graph\mesh_node.h" />
+    <ClInclude Include="src\scene_graph\scene_node.h" />
     <ClInclude Include="src\reference_counted.h" />
     <ClInclude Include="src\graphics\vertex.h" />
     <ClInclude Include="src\graphics\material.h" />
     <ClInclude Include="src\graphics\mesh.h" />
-    <ClInclude Include="src\scene\scene_manager.h" />
+    <ClInclude Include="src\scene_graph\scene_manager.h" />
     <ClInclude Include="src\graphics\texture.h" />
     <ClInclude Include="src\soil\image_DXT.h" />
     <ClInclude Include="src\soil\image_helper.h" />

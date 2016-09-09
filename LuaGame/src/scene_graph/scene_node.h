@@ -7,7 +7,7 @@
 
 namespace luagame {
 
-	class scene_manager; // forward declaration
+	class scene_graph; // forward declaration
 
 	enum node_type {
 		empty_node_type, mesh_node_type, camera_node_type
@@ -25,7 +25,7 @@ namespace luagame {
 	class scene_node : virtual public reference_counted {
 	public:
 
-		scene_node(scene_manager * scene = nullptr);
+		scene_node(scene_graph * scene = nullptr);
 
 		virtual ~scene_node();
 
@@ -94,7 +94,7 @@ namespace luagame {
 
 	protected:
 
-		luagame::scene_manager *	scene;
+		luagame::scene_graph *	scene;
 		luagame::scene_node *		parent;
 		luagame::sn_list			children;
 

@@ -3,16 +3,20 @@
 #include "graphics\graphics_context.h"
 #include "graphics\mesh.h"
 
-#include "scene\scene_manager.h"
-#include "scene\scene_node.h"
-#include "scene\mesh_node.h"
-#include "scene\camera_node.h"
+#include "scene_graph\scene_manager.h"
+#include "scene_graph\scene_node.h"
+#include "scene_graph\mesh_node.h"
+#include "scene_graph\camera_node.h"
 
 #include <glm/gtx/io.hpp>
 
 #include <cstdlib>
 
 #include "graphics\shader_loader.h"
+#include "graphics\vertex.h"
+
+#include "binding\binding.h"
+#include "util\any_key.h"
 
 using namespace luagame;
 
@@ -21,13 +25,19 @@ float randf() {
 }
 
 int main() {
+	int result = binding_execute();
+	util::any_key();
+	return result;
+}
+
+int old_main() {
 	srand(time(NULL));
 
 	luagame::graphics_context * graphics = new luagame::graphics_context();
 
 	graphics->set_title("This is my title!");
 
-	luagame::scene_manager * scene = new luagame::scene_manager(graphics);
+	luagame::scene_graph * scene = new luagame::scene_graph(graphics);
 
 	luagame::mesh * mesh = new luagame::mesh;
 
@@ -49,17 +59,16 @@ int main() {
 	vertices[3].color = glm::vec3(0, 0, 1);
 	vertices[3].texcoord = glm::vec2(0, 1);
 
-	mesh->append(vertices[0]);
-	mesh->append(vertices[1]);
-	mesh->append(vertices[2]);
-	mesh->append(vertices[2]);
-	mesh->append(vertices[3]);
-	mesh->append(vertices[0]);
+	mesh->append(&vertices[0]);
+	mesh->append(&vertices[1]);
+	mesh->append(&vertices[2]);
+	mesh->append(&vertices[2]);
+	mesh->append(&vertices[3]);
+	mesh->append(&vertices[0]);
 
 	material::options mtlopts = {};
 
 	mtlopts.use_position = true;
-	// mtlopts.use_color = true;
 	mtlopts.use_texture = true;
 	mtlopts.use_transparency = true;
 

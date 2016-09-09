@@ -2,14 +2,14 @@
 
 #include "../common.h"
 
-#include "../scene/scene_manager.h"
+#include "../scene_graph/scene_manager.h"
 #include "texture.h"
 
 namespace luagame {
 	class graphics_context : virtual public reference_counted {
 	public:
 
-		graphics_context(int width = 800, int height = 600, const char * title = "luagame");
+		graphics_context(int width = 800, int height = 600, std::string title = "luagame");
 
 		virtual ~graphics_context();
 
@@ -29,7 +29,9 @@ namespace luagame {
 
 		void swap_buffers();
 
-		void set_title(const char * new_title);
+		std::string get_title() { return title; }
+
+		void set_title(const std::string new_title);
 
 		bool get_should_close();
 
@@ -37,7 +39,8 @@ namespace luagame {
 
 	private:
 
-		GLFWwindow * glfw_window;
+		GLFWwindow *	glfw_window;
+		std::string		title;
 
 	};
 }

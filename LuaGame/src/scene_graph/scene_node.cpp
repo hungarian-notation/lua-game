@@ -2,7 +2,7 @@
 
 using namespace luagame;
 
-scene_node::scene_node(scene_manager * scene) : scene(scene) {
+scene_node::scene_node(scene_graph * scene) : scene(scene) {
 	rel_rotation = glm::quat();
 	rel_translation = glm::vec3(0, 0, 0);
 	rel_scale = glm::vec3(1, 1, 1);

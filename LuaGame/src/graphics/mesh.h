@@ -8,6 +8,8 @@
 #include "texture.h"
 
 namespace luagame {
+	struct vertex; // so as to avoid including glm into this header
+
 	class mesh : virtual public reference_counted {
 	public:
 
@@ -21,7 +23,7 @@ namespace luagame {
 
 		void set(const vertex * const vertex_data, int count);
 
-		void append(const vertex vertex);
+		void append(const vertex * vertex);
 
 		void append(const vertex * const vertex_data, int count);
 
@@ -39,7 +41,7 @@ namespace luagame {
 
 		void bind();
 
-		size_t size() { return vertices.size(); }
+		size_t size();
 
 	private:
 
@@ -47,7 +49,7 @@ namespace luagame {
 
 		luagame::texture * texture;
 
-		std::vector<vertex> vertices;
+		std::vector<vertex> * vertices; // a pointer simply to avoid including glm into this header
 
 		GLuint gl_buffer, gl_vertex_array;
 

@@ -1,43 +1,48 @@
 #include "mesh.h"
 
+#include "vertex.h"
+
+
 luagame::mesh::mesh() :
 	material	(nullptr),
 	gl_buffer	(NULL),
-	dirty		(false) {}
+	dirty		(false),
+	vertices	(new std::vector<vertex>()) {}
 
 luagame::mesh::~mesh() {
 	set_material(nullptr);
 	set_texture((luagame::texture *)nullptr);
+	delete vertices;
 }
 
 void luagame::mesh::clear() {
-	if (vertices.size() > 0) {
-		vertices.clear();
+	if (vertices->size() > 0) {
+		vertices->clear();
 		dirty = true;
 	}
 }
 
 void luagame::mesh::set(const vertex * const vertex_data, int count) {
-	if (vertices.size() > 0) {
-		vertices.clear();
+	if (vertices->size() > 0) {
+		vertices->clear();
 		dirty = true;
 	}
 
 	if (count > 0) {
-		vertices.reserve(count);
-		vertices.insert(vertices.end(), vertex_data, vertex_data + count);
+		vertices->reserve(count);
+		vertices->insert(vertices->end(), vertex_data, vertex_data + count);
 		dirty = true;
 	}
 }
 
-void luagame::mesh::append(const vertex vertex) {
-	append(&vertex, 1);
+void luagame::mesh::append(const vertex * vertex) {
+	append(vertex, 1);
 }
 
 void luagame::mesh::append(const vertex * vertex_data, int count) {
 	if (count > 0) {
-		vertices.reserve(vertices.size() + count);
-		vertices.insert(vertices.end(), vertex_data, vertex_data + count);
+		vertices->reserve(vertices->size() + count);
+		vertices->insert(vertices->end(), vertex_data, vertex_data + count);
 		dirty = true;
 	}
 }
@@ -85,7 +90,7 @@ void luagame::mesh::bind() {
 
 	if (dirty) {
 		glBindBuffer(GL_ARRAY_BUFFER, gl_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(luagame::vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(luagame::vertex) * vertices->size(), vertices->data(), GL_STATIC_DRAW);
 
 		GLint position_attr = material->get_targets().position_attr;
 		GLint color_attr = material->get_targets().color_attr;
@@ -117,3 +122,5 @@ void luagame::mesh::bind() {
 		dirty = false;
 	}
 }
+
+size_t luagame::mesh::size() { return vertices->size(); }

@@ -9,12 +9,12 @@
 #include "camera_node.h"
 
 namespace luagame {
-	class scene_manager : virtual public reference_counted {
+	class scene_graph : virtual public reference_counted {
 	public:
 
-		scene_manager(graphics_context * context) : context(context), root_node(this) {}
+		scene_graph(graphics_context * context) : context(context), root_node(this) {}
 
-		virtual ~scene_manager() {}
+		virtual ~scene_graph() {}
 
 	public:
 
