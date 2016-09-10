@@ -57,10 +57,13 @@
     <ClCompile Include="src\scene_graph\scene_node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\binding\binding.cpp">
+    <ClCompile Include="src\binding\lgapi_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\binding\luagame_module.cpp">
+    <ClCompile Include="src\binding\lgapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,13 +137,13 @@
     <ClInclude Include="src\graphics\transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\binding.h">
+    <ClInclude Include="src\binding\lgapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\binding_conf.h">
+    <ClInclude Include="src\binding\lgapi_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\luagame_module.h">
+    <ClInclude Include="src\binding\shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

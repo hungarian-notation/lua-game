@@ -22,7 +22,7 @@
 
    history:
       1.16   major bugfix - convert_format converted one too many pixels
-      1.15   initialize some fields for thread safety
+      1.15   lg_initialize_internals some fields for thread safety
       1.14   fix threadsafe conversion bug; header-file-only version (#define STBI_HEADER_FILE_ONLY before including)
       1.13   threadsafe
       1.12   const qualifiers in the API
@@ -1267,7 +1267,7 @@ static int process_frame_header(jpeg *z, int scan)
 static int decode_jpeg_header(jpeg *z, int scan)
 {
    int m;
-   z->marker = MARKER_none; // initialize cached marker to empty
+   z->marker = MARKER_none; // lg_initialize_internals cached marker to empty
    m = get_marker(z);
    if (!SOI(m)) return e("no SOI","Corrupt JPEG");
    if (scan == SCAN_type) return 1;
@@ -1902,7 +1902,7 @@ static int parse_zlib_header(zbuf *a)
    return 1;
 }
 
-// @TODO: should statically initialize these for optimal thread safety
+// @TODO: should statically lg_initialize_internals these for optimal thread safety
 static uint8 default_length[288], default_distance[32];
 static void init_defaults(void)
 {

@@ -15,8 +15,9 @@
 #include "graphics\shader_loader.h"
 #include "graphics\vertex.h"
 
-#include "binding\binding.h"
 #include "util\any_key.h"
+
+#include "binding\lgapi.h"
 
 using namespace luagame;
 
@@ -25,7 +26,7 @@ float randf() {
 }
 
 int main() {
-	int result = binding_execute();
+	int result = api::execute();
 	util::any_key();
 	return result;
 }

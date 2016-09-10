@@ -20,7 +20,7 @@
   
    history:
       1.16   major bugfix - convert_format converted one too many pixels
-      1.15   initialize some fields for thread safety
+      1.15   lg_initialize_internals some fields for thread safety
       1.14   fix threadsafe conversion bug; header-file-only version (#define STBI_HEADER_FILE_ONLY before including)
       1.13   threadsafe
       1.12   const qualifiers in the API

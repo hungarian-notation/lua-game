@@ -89,6 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -111,6 +112,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -134,12 +136,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="src\binding\lgapi.cpp" />
+    <ClCompile Include="src\binding\lgapi_window.cpp" />
+    <ClCompile Include="src\binding\shared.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\shader_loader.cpp" />
-    <ClCompile Include="src\binding\luagame_module.cpp" />
-    <ClCompile Include="src\binding\binding.cpp" />
     <ClCompile Include="src\scene_graph\camera_node.cpp" />
     <ClCompile Include="src\scene_graph\scene_node.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -151,14 +154,14 @@
     <ClCompile Include="src\graphics\graphics_context.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\binding\binding_conf.h" />
-    <ClInclude Include="src\binding\luagame_module.h" />
+    <ClInclude Include="src\binding\lgapi.h" />
+    <ClInclude Include="src\binding\lgapi_window.h" />
+    <ClInclude Include="src\binding\shared.h" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
     <ClInclude Include="src\graphics\shader_loader.h" />
     <ClInclude Include="src\graphics\transform.h" />
-    <ClInclude Include="src\binding\binding.h" />
     <ClInclude Include="src\scene_graph\camera_node.h" />
     <ClInclude Include="src\scene_graph\mesh_node.h" />
     <ClInclude Include="src\scene_graph\scene_node.h" />
