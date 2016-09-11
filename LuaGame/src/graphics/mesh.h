@@ -7,7 +7,11 @@
 #include "material.h"
 #include "texture.h"
 
+#include "../graphics/graphics_math.h"
+
 namespace luagame {
+
+
 	struct vertex; // so as to avoid including glm into this header
 
 	class mesh : virtual public reference_counted {
@@ -42,6 +46,8 @@ namespace luagame {
 		void bind();
 
 		size_t size();
+
+		void draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix);
 
 	private:
 

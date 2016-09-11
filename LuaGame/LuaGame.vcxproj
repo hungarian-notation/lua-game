@@ -137,14 +137,13 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\binding\lgapi.cpp" />
+    <ClCompile Include="src\binding\lgapi_math.cpp" />
     <ClCompile Include="src\binding\lgapi_window.cpp" />
     <ClCompile Include="src\binding\shared.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\shader_loader.cpp" />
-    <ClCompile Include="src\scene_graph\camera_node.cpp" />
-    <ClCompile Include="src\scene_graph\scene_node.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\soil\image_DXT.c" />
     <ClCompile Include="src\soil\image_helper.c" />
@@ -155,21 +154,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\binding\lgapi.h" />
+    <ClInclude Include="src\binding\lgapi_math.h" />
     <ClInclude Include="src\binding\lgapi_window.h" />
-    <ClInclude Include="src\binding\shared.h" />
+    <ClInclude Include="src\binding\lgapi_shared.h" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
     <ClInclude Include="src\graphics\shader_loader.h" />
     <ClInclude Include="src\graphics\transform.h" />
-    <ClInclude Include="src\scene_graph\camera_node.h" />
-    <ClInclude Include="src\scene_graph\mesh_node.h" />
-    <ClInclude Include="src\scene_graph\scene_node.h" />
     <ClInclude Include="src\reference_counted.h" />
     <ClInclude Include="src\graphics\vertex.h" />
     <ClInclude Include="src\graphics\material.h" />
     <ClInclude Include="src\graphics\mesh.h" />
-    <ClInclude Include="src\scene_graph\scene_manager.h" />
     <ClInclude Include="src\graphics\texture.h" />
     <ClInclude Include="src\soil\image_DXT.h" />
     <ClInclude Include="src\soil\image_helper.h" />

@@ -1,7 +1,7 @@
-function luagame.load () 
-	print "loading"
-end
+print(luagame.window)
 
-function luagame.update (dT)
-	print "update"
-end
+local updates = 0
+
+matrix = luagame.matrix():set_ortho(0, 0, 800, 600);
+
+luagame.matrix(matrix)

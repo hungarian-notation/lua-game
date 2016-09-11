@@ -1,8 +1,8 @@
 #pragma once
 
-#include "shared.h"
-
+#include "lgapi_shared.h"
 #include "lgapi_window.h"
+#include "lgapi_math.h"
 
 namespace luagame {
 

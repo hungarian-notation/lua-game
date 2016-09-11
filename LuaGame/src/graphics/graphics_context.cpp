@@ -44,7 +44,7 @@ void luagame::graphics_context::swap_buffers() {
 void luagame::graphics_context::set_title(std::string new_title) {
 	glfwSetWindowTitle(glfw_window, new_title.c_str());
 	title = new_title;
-	_log("set window title to: %s", new_title);
+	_log("set window title to: %s", new_title.c_str());
 }
 
 bool luagame::graphics_context::get_should_close() {

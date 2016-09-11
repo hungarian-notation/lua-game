@@ -124,3 +124,20 @@ void luagame::mesh::bind() {
 }
 
 size_t luagame::mesh::size() { return vertices->size(); }
+
+void luagame::mesh::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix) {
+
+	material->bind();
+
+	material::program_targets targets = material->get_targets();
+
+	glUniformMatrix4fv(targets.model_uni, 1, GL_FALSE, (GLfloat *)(&model_matrix));
+	glUniformMatrix4fv(targets.view_uni, 1, GL_FALSE, (GLfloat *)(&view_matrix));
+	glUniformMatrix4fv(targets.proj_uni, 1, GL_FALSE, (GLfloat *)(&projection_matrix));
+
+	this->bind();
+
+	if (material->opts().use_texture && texture) texture->bind();
+
+	glDrawArrays(GL_TRIANGLES, 0, this->size());
+}

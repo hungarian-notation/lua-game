@@ -1920,7 +1920,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
- *  @sa @ref window_title
+ *  @sa @ref window_get_title
  *
  *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.

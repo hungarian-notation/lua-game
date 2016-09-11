@@ -25,7 +25,11 @@ float randf() {
 	return rand() % RAND_MAX / float(RAND_MAX);
 }
 
+int old_main();
+
 int main() {
+	old_main();
+
 	int result = api::execute();
 	util::any_key();
 	return result;
@@ -38,7 +42,7 @@ int old_main() {
 
 	graphics->set_title("This is my title!");
 
-	luagame::scene_graph * scene = new luagame::scene_graph(graphics);
+	// luagame::scene_graph * scene = new luagame::scene_graph(graphics);
 
 	luagame::mesh * mesh = new luagame::mesh;
 
@@ -76,49 +80,74 @@ int old_main() {
 	mesh->set_material(mtlopts);
 	mesh->set_texture("img_test.png");
 
-	scene_node	camera_pivot;
-	camera_node camera(graphics);
+	glm::mat4 view, projection;
 
-	camera_pivot.add_child(&camera);
+	projection = glm::perspectiveFov(glm::half_pi<float>(), (float) graphics->get_size().x, (float) graphics->get_size().y, 1.0F, 100.0F);
 
-	scene->add(&camera_pivot);
 
-	camera.perspective(glm::half_pi<float>(), 1, 100);
-	camera.set_translation(glm::vec3(0, 0, 30));
+	// scene_node	camera_pivot;
+	// camera_node camera(graphics);
+
+	// camera_pivot.add_child(&camera);
+
+	// scene->add(&camera_pivot);
+
+	// camera.perspective(glm::half_pi<float>(), 1, 100);
+	// camera.set_translation(glm::vec3(0, 0, 30));
 
 #define MODEL_COUNT 1000
 
-	mesh_node * models[MODEL_COUNT];
+	struct model {
+		luagame::mesh * mesh;
+		glm::mat4 transform;
+	};
+
+	model models[MODEL_COUNT];
 
 	for (int i = 0; i < MODEL_COUNT; i++) {
-		models[i] = new mesh_node(mesh);
-		models[i]->set_translation(glm::vec3(randf() * 30 - 15, randf() * 30 - 15, randf() * 30 - 15));
-		models[i]->set_rotation(glm::vec3(randf() * glm::two_pi<float>(), randf() * glm::two_pi<float>(), randf()  * glm::two_pi<float>()));
+		models[i].mesh = mesh;
+		models[i].transform = glm::mat4();
 
-		scene->add(models[i]);
+		models[i].transform = glm::translate(
+			models[i].transform,
+			glm::vec3(randf() * 10 - 5, randf() * 10 - 5, randf() * 10 - 5)
+		);
+
+		float angle = glm::two_pi<float>() * randf();
+
+		glm::vec3 axis = glm::normalize(glm::vec3(randf() * 2 - 1, randf() * 2 - 1, randf() * 2 - 1));
+
+		glm::quat rotation(angle, axis);
+
+		models[i].transform *= glm::mat4_cast(glm::normalize(rotation));
+
+		models[i].transform = glm::scale(models[i].transform, glm::vec3(0.5F));
 	}
 
-	mesh->release();
-	scene->set_camera(&camera);
-
 	float rot = 0.01;
+
+	glm::quat viewrot;
 
 	while (!graphics->get_should_close()) {
 		graphics->clear();
 
-		camera_pivot.rotate(glm::quat(glm::vec3(0.01, 0.001532, 0.01290872)));
+		viewrot = glm::normalize(viewrot * glm::quat(glm::vec3(0.01F, 0.005F, 0.007F)));
 
-		scene->render();
+		view = glm::mat4();
+
+		view = glm::translate(view, glm::vec3(0, 0, -10));
+		view = view * glm::mat4_cast(viewrot);
+
+		for (int i = 0; i < MODEL_COUNT; i++) {
+			models[i].mesh->draw(models[i].transform, view, projection);
+		}
 
 		graphics->swap_buffers();
 		graphics->poll_events();
 	}
 
-	for (int i = 0; i < MODEL_COUNT; i++) {
-		models[i]->release();
-	}
 
-	scene->release();
+	mesh->release();
 	graphics->release();
 
 	return 0;

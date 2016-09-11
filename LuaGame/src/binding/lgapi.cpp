@@ -1,12 +1,7 @@
 #include "lgapi.h"
+#include "..\graphics\graphics_context.h"
 
 using namespace luagame;
-
-namespace {
-	luaL_Reg api_funcs[] = {
-		{NULL, NULL}
-	};
-}
 
 int print_error(lua_State * L) {
 	_log("lua error: %s", lua_tostring(L, -1));
@@ -15,38 +10,57 @@ int print_error(lua_State * L) {
 }
 
 int luagame::api::execute() {
-
 	lua_State * L = luaL_newstate();
+
 	luaL_openlibs(L);
-	luaopen_luagame(L); lua_pop(L, 1);
+
+	luaopen_luagame(L);
+
+	lua_getfield(L, -1, "window");
+
+	graphics_context * window = to_api_object<graphics_context>(L, -1);
+
+	lua_pop(L, 2);
 
 	if (luaL_loadfile(L, "binding\\init.lua") != LUA_OK)
 		return print_error(L);
+	
 	if (lua_pcall(L, 0, 0, 0) != LUA_OK)
 		return print_error(L);
 
 	if (api::hooks::load(L) != LUA_OK)
 		return print_error(L);
 
-	while (true) {
+	while (!window->get_should_close()) {
+		window->poll_events();
+
 		if (api::hooks::update(L, 1.0F) != LUA_OK)
 			return print_error(L);
+		
+		window->clear();
+
 		if (api::hooks::draw(L) != LUA_OK)
 			return print_error(L);
+	
+		window->swap_buffers();
 	}
 
 	lua_close(L);
 }
 
 int luagame::api::luaopen_luagame(lua_State * L) {
-	luaL_newlib(L, api_funcs);
-	
-	api::create_window(L);
 
+	luaL_Reg funcs[] = {
+		{ "matrix", &create_matrix },
+		{ NULL, NULL }
+	};
+
+	luaL_newlib(L, funcs);
+
+	api::create_window(L);
 	lua_setfield(L, -2, "window");
 
 	lua_pushvalue(L, -1);
-
 	lua_setglobal(L, "luagame");
 
 	return 1;
