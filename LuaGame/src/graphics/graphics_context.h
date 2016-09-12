@@ -27,6 +27,10 @@ namespace luagame {
 			return window_size;
 		}
 
+		void resize(int width, int height) {
+			glfwSetWindowSize(glfw_window, width, height);
+		}
+
 		void swap_buffers();
 
 		std::string get_title() { return title; }

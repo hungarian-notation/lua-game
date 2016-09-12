@@ -1,13 +1,12 @@
 #pragma once
 
-#include "lgapi_shared.h"
+#include "binding.h"
 #include "lgapi_window.h"
 #include "lgapi_math.h"
 
 namespace luagame {
 
 	namespace api {
-
 		int execute();
 
 		int luaopen_luagame(lua_State * L);
@@ -27,7 +26,6 @@ namespace luagame {
 		int create_scene(lua_State * L);
 
 		int create_node(lua_State * L);
-
 	}
 
 }

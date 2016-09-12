@@ -1,7 +1,15 @@
-print(luagame.window)
+luagame.window:resize(200, 100)
 
-local updates = 0
+vector = luagame.vector
+matrix = luagame.matrix
 
-matrix = luagame.matrix():set_ortho(0, 0, 800, 600);
+a = vector(0, 0, 0, 1)
 
-luagame.matrix(matrix)
+transform = matrix()
+
+transform:rotate(math.pi / 2, 0, 0, 1)
+transform:translate(10, 0, 0)
+
+print(transform);
+
+print( transform * a )

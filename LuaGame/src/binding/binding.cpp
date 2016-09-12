@@ -1,4 +1,4 @@
-#include "lgapi_shared.h"
+#include "binding.h"
 
 int luagame::release_api_object(lua_State * L) {
 	reference_counted ** objref = (reference_counted **)lua_touserdata(L, 1);

@@ -137,9 +137,10 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\binding\lgapi.cpp" />
-    <ClCompile Include="src\binding\lgapi_math.cpp" />
+    <ClCompile Include="src\binding\lgapi_matrix.cpp" />
+    <ClCompile Include="src\binding\lgapi_vector.cpp" />
     <ClCompile Include="src\binding\lgapi_window.cpp" />
-    <ClCompile Include="src\binding\shared.cpp" />
+    <ClCompile Include="src\binding\binding.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\graphics\material.cpp" />
     <ClCompile Include="src\graphics\mesh.cpp" />
@@ -155,13 +156,14 @@
   <ItemGroup>
     <ClInclude Include="src\binding\lgapi.h" />
     <ClInclude Include="src\binding\lgapi_math.h" />
+    <ClInclude Include="src\binding\lgapi_matrix.h" />
+    <ClInclude Include="src\binding\lgapi_vector.h" />
     <ClInclude Include="src\binding\lgapi_window.h" />
-    <ClInclude Include="src\binding\lgapi_shared.h" />
+    <ClInclude Include="src\binding\binding.h" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
     <ClInclude Include="src\graphics\shader_loader.h" />
-    <ClInclude Include="src\graphics\transform.h" />
     <ClInclude Include="src\reference_counted.h" />
     <ClInclude Include="src\graphics\vertex.h" />
     <ClInclude Include="src\graphics\material.h" />

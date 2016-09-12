@@ -52,6 +52,7 @@ int luagame::api::luaopen_luagame(lua_State * L) {
 
 	luaL_Reg funcs[] = {
 		{ "matrix", &create_matrix },
+		{ "vector", &create_vector },
 		{ NULL, NULL }
 	};
 

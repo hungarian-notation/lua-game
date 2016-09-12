@@ -57,10 +57,13 @@
     <ClCompile Include="src\binding\lgapi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\binding\shared.cpp">
+    <ClCompile Include="src\binding\lgapi_vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\binding\lgapi_math.cpp">
+    <ClCompile Include="src\binding\lgapi_matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\binding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,9 +122,6 @@
     <ClInclude Include="src\graphics\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\binding\lgapi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,7 +131,13 @@
     <ClInclude Include="src\binding\lgapi_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\lgapi_shared.h">
+    <ClInclude Include="src\binding\lgapi_vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binding\lgapi_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binding\binding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
