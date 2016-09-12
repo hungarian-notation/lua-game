@@ -6,7 +6,7 @@ namespace luagame {
 	void push_vector_constructor(lua_State * L);
 
 	void push_vector(lua_State * L, glm::vec4 vector);
-	void push_vector(lua_State * L, glm::vec3 vector, float w=0);
+	void push_vector(lua_State * L, glm::vec3 vector, float w = 1);
 
 	int is_vector(lua_State * L, int idx);
 

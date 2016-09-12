@@ -18,8 +18,21 @@ namespace {
 	int matrix_set_perspective(lua_State * L);
 
 	int matrix_translate(lua_State * L);
-	int matrix_scale(lua_State * L);
+	int matrix_get_translated(lua_State * L);
+
 	int matrix_rotate(lua_State * L);
+	int matrix_get_rotated(lua_State * L);
+
+	int matrix_scale(lua_State * L);
+	int matrix_get_scaled(lua_State * L);
+
+	int matrix_invert(lua_State * L);
+	int matrix_get_inverse(lua_State * L);
+
+	int matrix_transpose(lua_State * L);
+	int matrix_get_transposed(lua_State * L);
+
+	int matrix_det(lua_State * L);
 }
 
 void luagame::push_matrix(lua_State * L, glm::mat4 matrix) {
@@ -40,8 +53,21 @@ void luagame::push_matrix(lua_State * L, glm::mat4 matrix) {
 			{ "set_perspective", &matrix_set_perspective },
 
 			{ "translate", &matrix_translate },
+			{ "get_translated", &matrix_get_translated },
+
 			{ "rotate", &matrix_rotate },
+			{ "get_rotated", &matrix_get_rotated },
+
 			{ "scale", &matrix_scale },
+			{ "get_scaled", &matrix_get_scaled },
+
+			{ "invert", &matrix_invert },
+			{ "get_inverse", &matrix_get_inverse },
+
+			{ "transpose", &matrix_transpose },
+			{ "get_transpose", &matrix_get_transposed },
+
+			{ "det", &matrix_det },
 
 			{ NULL, NULL }
 		};
@@ -195,7 +221,7 @@ namespace {
 		glm::mat4 result;
 
 		switch (lua_gettop(L)) {
-		
+
 		case 2:
 		{
 			glm::vec3 vector = to_vec3(L, 2);
@@ -203,7 +229,7 @@ namespace {
 		}
 		break;
 
-		case 4: 
+		case 4:
 		{
 			glm::vec3 vector = glm::vec3((float)lua_tonumber(L, 2), (float)lua_tonumber(L, 3), (float)lua_tonumber(L, 4));
 			result = glm::translate(*matrix, vector);
@@ -220,11 +246,18 @@ namespace {
 		return 1;
 	}
 
+	int matrix_get_translated(lua_State * L) {
+		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+		lua_copy(L, -1, 1); // -- copy it over the original matrix
+		lua_pop(L, 1); // -- remove the initial copy
+		return matrix_translate(L);  // -- call :translate on the new matrix
+	}
+
 	int matrix_scale(lua_State * L) {
 
 		if (lua_isnumber(L, 2)) {
 			glm::mat4 * matrix = to_matrix(L, 1);
-			float scalar = (float) lua_tonumber(L, 2);
+			float scalar = (float)lua_tonumber(L, 2);
 			*matrix = glm::scale(*matrix, glm::vec3(scalar, scalar, scalar));
 		} else {
 			glm::mat4 * matrix = to_matrix(L, 1);
@@ -236,16 +269,23 @@ namespace {
 		return 1;
 	}
 
+	int matrix_get_scaled(lua_State * L) {
+		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+		lua_copy(L, -1, 1); // -- copy it over the original matrix
+		lua_pop(L, 1); // -- remove the initial copy
+		return matrix_scale(L);  // -- call :scale on the new matrix
+	}
+
 	int matrix_rotate(lua_State * L) {
 		switch (lua_gettop(L)) {
 
-		case 3: 
+		case 3:
 		{
 			glm::mat4 * matrix = to_matrix(L, 1);
 			float angle = (float)lua_tonumber(L, 2);
 			glm::vec3 axis = to_vec3(L, 3);
 			*matrix = glm::rotate(*matrix, angle, axis);
-		} 
+		}
 		break;
 
 		case 5:
@@ -253,7 +293,7 @@ namespace {
 			glm::mat4 * matrix = to_matrix(L, 1);
 			float angle = (float)lua_tonumber(L, 2);
 
-			glm::vec3 axis = glm::vec3( 
+			glm::vec3 axis = glm::vec3(
 				(float)lua_tonumber(L, 3),
 				(float)lua_tonumber(L, 4),
 				(float)lua_tonumber(L, 5)
@@ -268,6 +308,43 @@ namespace {
 		}
 
 		lua_settop(L, 1);
+		return 1;
+	}
+
+	int matrix_get_rotated(lua_State * L) {
+		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+		lua_copy(L, -1, 1); // -- copy it over the original matrix
+		lua_pop(L, 1); // -- remove the initial copy
+		return matrix_rotate(L);  // -- call :rotate on the new matrix
+	}
+
+	int matrix_invert(lua_State * L) {
+		glm::mat4 * matrix = to_matrix(L, 1);
+		*matrix = glm::inverse(*matrix);
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int matrix_get_inverse(lua_State * L) {
+		push_matrix(L, glm::inverse(to_mat4(L, 1)));
+		return 1;
+	}
+
+	int matrix_transpose(lua_State * L) {
+		glm::mat4 * matrix = to_matrix(L, 1);
+		*matrix = glm::transpose(*matrix);
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int matrix_get_transposed(lua_State * L) {
+		push_matrix(L, glm::transpose(to_mat4(L, 1)));
+		return 1;
+	}
+
+	int matrix_det(lua_State * L) {
+		glm::mat4 * matrix = to_matrix(L, 1);
+		lua_pushnumber(L, glm::determinant(*matrix));
 		return 1;
 	}
 }

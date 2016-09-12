@@ -28,7 +28,7 @@ float randf() {
 int old_main();
 
 int main() {
-	old_main();
+	// old_main();
 
 	int result = api::execute();
 	util::any_key();
