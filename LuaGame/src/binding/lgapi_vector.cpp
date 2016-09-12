@@ -9,7 +9,7 @@
 #define LUAGAME_SWIZZLE_FAMILIES	3
 #define LUAGAME_NOT_A_SYMBOL -1
 
-#define DEFAULT_HOMOGENOUS_COMPONENT 0
+#define LG_DEFAULT_VCOMP 0
 
 using namespace luagame;
 
@@ -75,7 +75,7 @@ void luagame::push_vector(lua_State * L, glm::vec4 vector) {
 
 			{ "truncate",				&vector_truncate },
 			{ "get_truncated",			&vector_get_truncated },
-			{ "homogenize",				&vector_homogenize }, 
+			{ "homogenize",				&vector_homogenize },
 			{ "get_homogenized",		&vector_get_homogenized },
 
 			{ NULL, NULL }
@@ -96,12 +96,11 @@ int luagame::api::create_vector(lua_State * L) {
 
 	switch (lua_gettop(L)) {
 	case 0:
-		vector = glm::vec4(0, 0, 0, DEFAULT_HOMOGENOUS_COMPONENT);
+		vector = glm::vec4(LG_DEFAULT_VCOMP, LG_DEFAULT_VCOMP, LG_DEFAULT_VCOMP, LG_DEFAULT_VCOMP);
 		break;
 	case 1:
-
 		if (lua_isnumber(L, 1)) {
-			vector = glm::vec4( (float)lua_tonumber(L, 1, 0), 0, 0, DEFAULT_HOMOGENOUS_COMPONENT);
+			vector = glm::vec4((float)lua_tonumber(L, 1), LG_DEFAULT_VCOMP, LG_DEFAULT_VCOMP, LG_DEFAULT_VCOMP);
 		} else if (is_vector(L, 1)) {
 			vector = to_vec4(L, 1);
 		} else if (lua_istable(L, 1)) {
@@ -109,7 +108,7 @@ int luagame::api::create_vector(lua_State * L) {
 				lua_geti(L, 1, comp + 1);
 				if (lua_isnumber(L, -1)) {
 					vector[comp] = (float)lua_tonumber(L, -1);
-				} else vector[comp] = comp == 3 ? DEFAULT_HOMOGENOUS_COMPONENT : 0;
+				} else vector[comp] = LG_DEFAULT_VCOMP;
 			}
 		} else {
 			return luaL_error(L, "invalid single argument to vector constructor: %s", lua_tolstring(L, 1, NULL));
@@ -120,10 +119,10 @@ int luagame::api::create_vector(lua_State * L) {
 	case 3:
 	case 4:
 		vector = glm::vec4(
-			(float)luaL_optnumber(L, 1, 0),
-			(float)luaL_optnumber(L, 2, 0),
-			(float)luaL_optnumber(L, 3, 0),
-			(float)luaL_optnumber(L, 4, DEFAULT_HOMOGENOUS_COMPONENT)
+			(float)luaL_optnumber(L, 1, LG_DEFAULT_VCOMP),
+			(float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP),
+			(float)luaL_optnumber(L, 3, LG_DEFAULT_VCOMP),
+			(float)luaL_optnumber(L, 4, LG_DEFAULT_VCOMP)
 		);
 		break;
 	default:
@@ -142,15 +141,44 @@ glm::vec4 * luagame::to_vector(lua_State * L, int idx) {
 	glm::vec4 * udata = (glm::vec4*) luaL_checkudata(L, idx, LUAGAME_VECTOR);
 	if (udata)
 		return udata;
-	else luaL_argerror(L, idx, "expected a vector");
+	else {
+		luaL_argerror(L, idx, "expected a vector");
+		return nullptr;
+	}
+}
+
+namespace {
+	template <int components, class vtype>
+	vtype to_vector_value(lua_State * L, int idx) {
+		if (is_vector(L, idx))
+			return vtype(*to_vector(L, idx));
+		else if (lua_istable(L, idx)) {
+			vtype value;
+
+			for (int i = 0; i < components; i++) {
+				lua_geti(L, idx, i + 1);
+
+				if (!lua_isnumber(L, -1))
+					luaL_error(L, "expected " LUAGAME_VECTOR " or array-like table of %d numbers; found %s", components, luaL_typename(L, idx));
+				else value[i] = (float)lua_tonumber(L, -1);
+
+				lua_pop(L, 1);
+			}
+
+			return value;
+		} else {
+			luaL_error(L, "expected " LUAGAME_VECTOR " or array-like table of %d numbers; found %s", components, luaL_typename(L, idx));
+			return vtype(); // unreachable
+		}
+	}
 }
 
 glm::vec4 luagame::to_vec4(lua_State * L, int idx) {
-	return *to_vector(L, idx);
+	return to_vector_value<4, glm::vec4>(L, idx);
 }
 
 glm::vec3 luagame::to_vec3(lua_State * L, int idx) {
-	return glm::vec3(luagame::to_vec4(L, idx));
+	return to_vector_value<3, glm::vec3>(L, idx);
 }
 
 #include <iostream>
@@ -184,7 +212,7 @@ namespace {
 
 		if (components == 1 && lua_isnumber(L, 3)) { // -- allow the setting of single components via raw numbers
 			int dst_index = check_swizzle_component(L, key[0]);
-			(*udata)[dst_index] = luaL_checknumber(L, -1);
+			(*udata)[dst_index] = (float)luaL_checknumber(L, -1);
 			return 0;
 		} if (lua_istable(L, 3)) { // -- allow the setting of arbitrarily long swizzle strings via tables
 			for (int src_index = 0; src_index < components; src_index++) {
@@ -193,7 +221,7 @@ namespace {
 				if (lua_geti(L, 3, src_index + 1) != LUA_TNUMBER)
 					return luaL_error(L, "input to swizzle-setter does not have enough numbers to satisfy swizzle-string");
 				else {
-					(*udata)[dst_index] = luaL_checknumber(L, -1);
+					(*udata)[dst_index] = (float)luaL_checknumber(L, -1);
 					lua_pop(L, 1);
 				}
 			}
@@ -208,8 +236,8 @@ namespace {
 		glm::vec4 * udata = luagame::to_vector(L, 1);
 
 		if (lua_isinteger(L, 2)) {
-			int index = lua_tointeger(L, 2);
-			float value = lua_tonumber(L, 3);
+			int index = (int)lua_tointeger(L, 2);
+			float value = (float)lua_tonumber(L, 3);
 
 			if (index < 1 || index > 4)
 				luaL_error(L, "could not set vector component; index %d out of bounds;", index);
@@ -257,11 +285,11 @@ namespace {
 					return 1; // -- return the member of the vector's metatable that matches the name
 				} else return vector_get_swizzle(L, udata, key);
 			} else { // -- vector does not have metatable; this should be impossible
-				luaL_error(L, "luagame bug: unexpected state while indexing vector");
+				return luaL_error(L, "luagame bug: unexpected state while indexing vector");
 			}
 
 		} else if (lua_isnumber(L, 2)) {
-			int index = luaL_checkinteger(L, 2);
+			int index = (int)luaL_checkinteger(L, 2);
 
 			if (index < 1 || index > 4)
 				return luaL_error(L, "could not set vector component; index %d out of bounds;", index);
@@ -397,7 +425,7 @@ namespace {
 
 	int vector_truncate(lua_State * L) {
 		glm::vec4 * vector = to_vector(L, 1);
-		float w = luaL_optnumber(L, 2, DEFAULT_HOMOGENOUS_COMPONENT);
+		float w = (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP);
 		vector->w = w;
 		lua_settop(L, 1);
 		return 1;
@@ -405,7 +433,7 @@ namespace {
 
 	int vector_get_truncated(lua_State * L) {
 		glm::vec4 value = to_vec4(L, 1);
-		float w = luaL_optnumber(L, 2, DEFAULT_HOMOGENOUS_COMPONENT);
+		float w = (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP);
 		value.w = w;
 		push_vector(L, value);
 		return 1;
@@ -427,7 +455,7 @@ namespace {
 
 		if (value.w == 0) {
 			lua_pushnil(L); // -- undefined
-			return 1; 
+			return 1;
 		} else {
 			value = value / value.w;
 			push_vector(L, value);

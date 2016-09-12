@@ -124,7 +124,7 @@ int old_main() {
 		models[i].transform = glm::scale(models[i].transform, glm::vec3(0.5F));
 	}
 
-	float rot = 0.01;
+	float rot = 0.01F;
 
 	glm::quat viewrot;
 

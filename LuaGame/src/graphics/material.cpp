@@ -82,6 +82,7 @@ string luagame::get_shader(const GLenum &type, const material::options &options)
 	default:
 		_log("invalid shader type GLenum: %d", type);
 		_err("invalid shader type");
+		return string(); // unreachable
 	}
 }
 

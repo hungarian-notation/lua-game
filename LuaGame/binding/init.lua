@@ -7,7 +7,7 @@ a = vec(1, 2, 3)
 
 b = a * 2
 
-c = b:get_homogenized()
+c = a + {1, 2, 3}
 
 print ("a: ", a)
 print ("b: ", b)

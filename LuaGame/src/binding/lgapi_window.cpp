@@ -84,7 +84,7 @@ int window::get_should_close(lua_State * L) {
 }
 int window::set_should_close(lua_State * L) {
 	graphics_context * ctx = to_api_object<graphics_context>(L, 1);
-	bool should_close = lua_toboolean(L, 2);
+	bool should_close = lua_toboolean(L, 2) != 0;
 	ctx->set_should_close(should_close);
 	return 0;
 }

@@ -46,6 +46,8 @@ int luagame::api::execute() {
 	}
 
 	lua_close(L);
+
+	return 0;
 }
 
 int luagame::api::luaopen_luagame(lua_State * L) {
