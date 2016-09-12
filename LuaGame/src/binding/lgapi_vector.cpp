@@ -9,6 +9,8 @@
 #define LUAGAME_SWIZZLE_FAMILIES	3
 #define LUAGAME_NOT_A_SYMBOL -1
 
+#define DEFAULT_HOMOGENOUS_COMPONENT 0
+
 using namespace luagame;
 
 namespace {
@@ -23,12 +25,19 @@ namespace {
 	int vector_divide(lua_State * L);
 	int vector_negate(lua_State * L);
 
+	int vector_normalize(lua_State * L);
+	int vector_get_normalized(lua_State * L);
+
 	int vector_length2(lua_State * L);
 	int vector_length(lua_State * L);
-	int vector_normalize(lua_State * L);
 	int vector_distance(lua_State * L);
 	int vector_crossproduct(lua_State * L);
 	int vector_dotproduct(lua_State * L);
+
+	int vector_truncate(lua_State * L);
+	int vector_get_truncated(lua_State * L);
+	int vector_homogenize(lua_State * L);
+	int vector_get_homogenized(lua_State * L);
 }
 
 void luagame::push_vector(lua_State * L, glm::vec4 vector) {
@@ -43,18 +52,31 @@ void luagame::push_vector(lua_State * L, glm::vec4 vector) {
 			{ LUA_METAMETHOD_NEWINDEX,	&vector_set },
 			{ LUA_METAMETHOD_TOSTRING,	&vector_tostring },
 
+			// -- These methods operate on component-wise on 4d vectors.
+
 			{ LUA_METAMETHOD_ADD,		&vector_add },
 			{ LUA_METAMETHOD_SUB,		&vector_subtract },
 			{ LUA_METAMETHOD_MUL,		&vector_multiply },
 			{ LUA_METAMETHOD_DIV,		&vector_divide },
 			{ LUA_METAMETHOD_UNM,		&vector_negate },
 
+			// -- These methods operate on 3d cartesian vectors.
+
+			{ "normalize",				&vector_normalize },
+			{ "get_normalized",			&vector_get_normalized },
+
 			{ "length_squared",			&vector_length2 },
 			{ "length",					&vector_length },
-			{ "normalized",				&vector_normalize },
 			{ "distance",				&vector_distance },
 			{ "cross",					&vector_crossproduct },
 			{ "dot",					&vector_dotproduct },
+
+			// -- These methods operate on 4d homogenous vectors
+
+			{ "truncate",				&vector_truncate },
+			{ "get_truncated",			&vector_get_truncated },
+			{ "homogenize",				&vector_homogenize }, 
+			{ "get_homogenized",		&vector_get_homogenized },
 
 			{ NULL, NULL }
 		};
@@ -74,12 +96,12 @@ int luagame::api::create_vector(lua_State * L) {
 
 	switch (lua_gettop(L)) {
 	case 0:
-		vector = glm::vec4(0, 0, 0, 1);
+		vector = glm::vec4(0, 0, 0, DEFAULT_HOMOGENOUS_COMPONENT);
 		break;
 	case 1:
 
 		if (lua_isnumber(L, 1)) {
-			vector = glm::vec4( (float)lua_tonumber(L, 1, 0), 0, 0, 1);
+			vector = glm::vec4( (float)lua_tonumber(L, 1, 0), 0, 0, DEFAULT_HOMOGENOUS_COMPONENT);
 		} else if (is_vector(L, 1)) {
 			vector = to_vec4(L, 1);
 		} else if (lua_istable(L, 1)) {
@@ -87,7 +109,7 @@ int luagame::api::create_vector(lua_State * L) {
 				lua_geti(L, 1, comp + 1);
 				if (lua_isnumber(L, -1)) {
 					vector[comp] = (float)lua_tonumber(L, -1);
-				} else vector[comp] = comp == 3 ? 1 : 0;
+				} else vector[comp] = comp == 3 ? DEFAULT_HOMOGENOUS_COMPONENT : 0;
 			}
 		} else {
 			return luaL_error(L, "invalid single argument to vector constructor: %s", lua_tolstring(L, 1, NULL));
@@ -101,7 +123,7 @@ int luagame::api::create_vector(lua_State * L) {
 			(float)luaL_optnumber(L, 1, 0),
 			(float)luaL_optnumber(L, 2, 0),
 			(float)luaL_optnumber(L, 3, 0),
-			(float)luaL_optnumber(L, 4, 1)
+			(float)luaL_optnumber(L, 4, DEFAULT_HOMOGENOUS_COMPONENT)
 		);
 		break;
 	default:
@@ -255,86 +277,58 @@ namespace {
 
 	int vector_tostring(lua_State * L) {
 		glm::vec4 udata = *luagame::to_vector(L, 1);
-		lua_pushfstring(L, "[%f, %f, %f (%f)]", udata.x, udata.y, udata.z, udata.w);
+		lua_pushfstring(L, "(%f, %f, %f : %f)", udata.x, udata.y, udata.z, udata.w);
 		return 1;
 	}
 
+	// -- mathematical operators
+
 	int vector_add(lua_State * L) {
-		glm::vec3 left = to_vec3(L, 1);
-		glm::vec3 right = to_vec3(L, 2);
+		glm::vec4 left = to_vec4(L, 1);
+		glm::vec4 right = to_vec4(L, 2);
 		push_vector(L, left + right);
 		return 1;
 	}
 
 	int vector_subtract(lua_State * L) {
-		glm::vec3 left = to_vec3(L, 1);
-		glm::vec3 right = to_vec3(L, 2);
+		glm::vec4 left = to_vec4(L, 1);
+		glm::vec4 right = to_vec4(L, 2);
 		push_vector(L, left - right);
 		return 1;
 	}
 
 	int vector_negate(lua_State * L) {
-		glm::vec3 vector = to_vec3(L, 1);
+		glm::vec4 vector = to_vec4(L, 1);
 		push_vector(L, -vector);
 		return 1;
 	}
 
-	int vector_length2(lua_State * L) {
-		lua_pushnumber(L, glm::length2(to_vec3(L, 1)));
-		return 1;
-	}
-
-	int vector_length(lua_State * L) {
-		lua_pushnumber(L, glm::length(to_vec3(L, 1)));
-		return 1;
-	}
-
-	int vector_normalize(lua_State * L) {
-		push_vector(L, glm::normalize(to_vec3(L, 1)));
-		return 1;
-	}
-
-	int vector_distance(lua_State * L) {
-		lua_pushnumber(L, glm::distance(to_vec3(L, 1), to_vec3(L, 2)));
-		return 1;
-	}
-
-	int vector_crossproduct(lua_State * L) {
-		push_vector(L, glm::cross(to_vec3(L, 1), to_vec3(L, 2)));
-		return 1;
-	}
-
-	int vector_dotproduct(lua_State * L) {
-		lua_pushnumber(L, glm::dot(to_vec3(L, 1), to_vec3(L, 2)));
-		return 1;
-	}
-
 	int vector_multiply(lua_State * L) {
-		if (is_vector(L, 1) && lua_isnumber(L, 2)) { 
+		if (is_vector(L, 1) && lua_isnumber(L, 2)) {
 			// -- vector * scalar
-			
+
 			push_vector(L, to_vec4(L, 1) * (float)lua_tonumber(L, 2));
 
-		} else if (lua_isnumber(L, 1) && is_vector(L, 2)) { 
+		} else if (lua_isnumber(L, 1) && is_vector(L, 2)) {
 			// -- scalar * vector
-		
+
 			push_vector(L, (float)lua_tonumber(L, 1) * to_vec4(L, 2));
 
 		} else if (is_vector(L, 1) && is_vector(L, 2)) {
 			// -- vector * vector
-		
+
 			push_vector(L, to_vec4(L, 1) * to_vec4(L, 2));
 
 			/*
 
-		} else if (is_vector(L, 1) && is_matrix(L, 2)) {
+			} else if (is_vector(L, 1) && is_matrix(L, 2)) {
 			// -- vector * matrix
-		
+
 			glm::vec4 vector = to_vec4(L, 1);
 			glm::mat4 matrix = to_mat4(L, 2);
 			push_vector(L, vector * matrix);
 
-		} else if (is_matrix(L, 1) && is_vector(L, 2)) { 
+			} else if (is_matrix(L, 1) && is_vector(L, 2)) {
 			// -- matrix * vector
 			_bug("this should be handled by the matrix");
 
@@ -360,5 +354,84 @@ namespace {
 		}
 
 		return 1;
+	}
+
+	// -- vector math methods
+
+	int vector_normalize(lua_State * L) {
+		glm::vec4 * value = to_vector(L, 1);
+		*value = glm::vec4(glm::normalize(glm::vec3(*value)), value->w);
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int vector_get_normalized(lua_State * L) {
+		push_vector(L, glm::normalize(to_vec3(L, 1)));
+		return 1;
+	}
+
+	int vector_length2(lua_State * L) {
+		lua_pushnumber(L, glm::length2(to_vec3(L, 1)));
+		return 1;
+	}
+
+	int vector_length(lua_State * L) {
+		lua_pushnumber(L, glm::length(to_vec3(L, 1)));
+		return 1;
+	}
+
+	int vector_distance(lua_State * L) {
+		lua_pushnumber(L, glm::distance(to_vec3(L, 1), to_vec3(L, 2)));
+		return 1;
+	}
+
+	int vector_crossproduct(lua_State * L) {
+		push_vector(L, glm::cross(to_vec3(L, 1), to_vec3(L, 2)));
+		return 1;
+	}
+
+	int vector_dotproduct(lua_State * L) {
+		lua_pushnumber(L, glm::dot(to_vec3(L, 1), to_vec3(L, 2)));
+		return 1;
+	}
+
+	int vector_truncate(lua_State * L) {
+		glm::vec4 * vector = to_vector(L, 1);
+		float w = luaL_optnumber(L, 2, DEFAULT_HOMOGENOUS_COMPONENT);
+		vector->w = w;
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int vector_get_truncated(lua_State * L) {
+		glm::vec4 value = to_vec4(L, 1);
+		float w = luaL_optnumber(L, 2, DEFAULT_HOMOGENOUS_COMPONENT);
+		value.w = w;
+		push_vector(L, value);
+		return 1;
+	}
+
+	int vector_homogenize(lua_State * L) {
+		glm::vec4 * vector = to_vector(L, 1);
+
+		if (vector->w == 0) return luaL_error(L, "undefined for vector with homogenous coordinate of 0");
+		else {
+			*vector = *vector / vector->w;
+			lua_settop(L, 1);
+			return 1;
+		}
+	}
+
+	int vector_get_homogenized(lua_State * L) {
+		glm::vec4 value = to_vec4(L, 1);
+
+		if (value.w == 0) {
+			lua_pushnil(L); // -- undefined
+			return 1; 
+		} else {
+			value = value / value.w;
+			push_vector(L, value);
+			return 1;
+		}
 	}
 }

@@ -1,26 +1,14 @@
 luagame.window:resize(200, 100)
 
-vector = luagame.vector
-matrix = luagame.matrix
+vec = luagame.vector
+mat = luagame.matrix
 
-a = vector(0, 0, 0)
+a = vec(1, 2, 3)
 
-transform = matrix()
+b = a * 2
 
-transform:rotate(math.pi / 2, 0, 0, 1)
-transform:translate(10, 0, 0)
+c = b:get_homogenized()
 
-inverse = transform:get_inverse()
-
-print(transform);
-print(inverse);
-
-b = transform * a
-
-print( b )
-
-c = inverse * b
-
-print ( c )
-
-print( inverse * transform )
+print ("a: ", a)
+print ("b: ", b)
+print ("c: ", c)
