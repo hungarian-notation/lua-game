@@ -1,7 +1,8 @@
 #pragma once
 
-#include "..\common.h"
 #include <lua53\lua.hpp>
+
+#include "..\common.h"
 
 #define LUA_METAMETHOD_CALL		"__call"
 #define LUA_METAMETHOD_GC		"__gc"
@@ -17,32 +18,12 @@
 
 #define LUA_METAMETHOD_UNM	"__unm"
 #define LUA_METAMETHOD_NOT	"__bnot"
-
 #define LUA_METAMETHOD_EQ	"__eq"
 
-namespace luagame {
-	int release_api_object(lua_State * L);
+void luagame_pushref(lua_State * L, luagame::reference_counted * object);
 
-	void create_api_object(lua_State * L, reference_counted * object);
+int lgapi_releaseref(lua_State * L);
 
-	template <class T>
-	T * to_api_object(lua_State * L, int idx) {
-		if (!lua_isnone(L, idx) && lua_isuserdata(L, idx)) {
-			T * ptr = dynamic_cast<T *>(*(reference_counted **)lua_touserdata(L, idx));
-
-			if (!ptr) {
-				luaL_error(L, "internal error: api object was invalid or of an unexpected type");
-				return nullptr; // unreachable due to longjmp
-			} else {
-				return ptr;
-			}
-		} else {
-			luaL_error(L, "not an api object; did you call with the wrong convention?");
-			return nullptr; // unreachable due to longjmp
-		}
-	}
-
-	static int illegal_operation(lua_State * L) {
-		return luaL_error(L, "illegal operation");
-	}
+template <class reftype> reftype * luagame_unwrapref(void * ref) {
+	return dynamic_cast<reftype *>(*(luagame::reference_counted **) ref);
 }

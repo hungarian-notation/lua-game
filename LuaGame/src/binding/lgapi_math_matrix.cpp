@@ -1,41 +1,38 @@
-#include "lgapi_matrix.h"
-#include <cstdlib>
 
-using namespace luagame;
-using namespace luagame::api;
+#include "lgapi_math.h"
+#include <cstdlib>
 
 #include <iostream>
 #include <sstream>
 #include <glm\gtx\io.hpp>
 
 namespace {
-	int matrix_tostring(lua_State * L);
+	int meta_tostring(lua_State * L);
+	int meta_multiply(lua_State * L);
 
-	int matrix_multiply(lua_State * L);
+	int set_identity(lua_State * L);
+	int set_ortho(lua_State * L);
+	int set_perspective(lua_State * L);
 
-	int matrix_set_identity(lua_State * L);
-	int matrix_set_ortho(lua_State * L);
-	int matrix_set_perspective(lua_State * L);
+	int translate(lua_State * L);
+	int get_translated(lua_State * L);
 
-	int matrix_translate(lua_State * L);
-	int matrix_get_translated(lua_State * L);
+	int rotate(lua_State * L);
+	int get_rotated(lua_State * L);
 
-	int matrix_rotate(lua_State * L);
-	int matrix_get_rotated(lua_State * L);
+	int scale(lua_State * L);
+	int get_scaled(lua_State * L);
 
-	int matrix_scale(lua_State * L);
-	int matrix_get_scaled(lua_State * L);
+	int invert(lua_State * L);
+	int get_inverse(lua_State * L);
 
-	int matrix_invert(lua_State * L);
-	int matrix_get_inverse(lua_State * L);
+	int transpose(lua_State * L);
+	int get_transposed(lua_State * L);
 
-	int matrix_transpose(lua_State * L);
-	int matrix_get_transposed(lua_State * L);
-
-	int matrix_det(lua_State * L);
+	int det(lua_State * L);
 }
 
-void luagame::push_matrix(lua_State * L, glm::mat4 matrix) {
+void luagame_pushmatrix(lua_State * L, glm::mat4 matrix) {
 	glm::mat4 * udata = (glm::mat4*) lua_newuserdata(L, sizeof(glm::mat4));
 
 	*udata = matrix;
@@ -44,30 +41,30 @@ void luagame::push_matrix(lua_State * L, glm::mat4 matrix) {
 
 		luaL_Reg functions[] = {
 
-			{ LUA_METAMETHOD_TOSTRING, &matrix_tostring },
+			{ LUA_METAMETHOD_TOSTRING, &meta_tostring },
 
-			{ LUA_METAMETHOD_MUL, &matrix_multiply },
+			{ LUA_METAMETHOD_MUL, &meta_multiply },
 
-			{ "set_identity", &matrix_set_identity },
-			{ "set_ortho", &matrix_set_ortho },
-			{ "set_perspective", &matrix_set_perspective },
+			{ "set_identity", &set_identity },
+			{ "set_ortho", &set_ortho },
+			{ "set_perspective", &set_perspective },
 
-			{ "translate", &matrix_translate },
-			{ "get_translated", &matrix_get_translated },
+			{ "translate", &translate },
+			{ "get_translated", &get_translated },
 
-			{ "rotate", &matrix_rotate },
-			{ "get_rotated", &matrix_get_rotated },
+			{ "rotate", &rotate },
+			{ "get_rotated", &get_rotated },
 
-			{ "scale", &matrix_scale },
-			{ "get_scaled", &matrix_get_scaled },
+			{ "scale", &scale },
+			{ "get_scaled", &get_scaled },
 
-			{ "invert", &matrix_invert },
-			{ "get_inverse", &matrix_get_inverse },
+			{ "invert", &invert },
+			{ "get_inverse", &get_inverse },
 
-			{ "transpose", &matrix_transpose },
-			{ "get_transpose", &matrix_get_transposed },
+			{ "transpose", &transpose },
+			{ "get_transpose", &get_transposed },
 
-			{ "det", &matrix_det },
+			{ "det", &det },
 
 			{ NULL, NULL }
 		};
@@ -81,11 +78,11 @@ void luagame::push_matrix(lua_State * L, glm::mat4 matrix) {
 	lua_setmetatable(L, -2);
 }
 
-int luagame::is_matrix(lua_State * L, int idx) {
+int luagame_ismatrix(lua_State * L, int idx) {
 	return (luaL_testudata(L, idx, LUAGAME_MATRIX) != nullptr);
 }
 
-glm::mat4 * luagame::to_matrix(lua_State * L, int idx) {
+glm::mat4 * luagame_tomatrix(lua_State * L, int idx) {
 	glm::mat4 * udata = (glm::mat4*) luaL_checkudata(L, idx, LUAGAME_MATRIX);
 	if (udata)
 		return udata;
@@ -95,11 +92,11 @@ glm::mat4 * luagame::to_matrix(lua_State * L, int idx) {
 	}
 }
 
-glm::mat4 luagame::to_mat4(lua_State * L, int idx) {
-	return *to_matrix(L, idx);
+glm::mat4 luagame_tomat4(lua_State * L, int idx) {
+	return *luagame_tomatrix(L, idx);
 }
 
-int luagame::api::create_matrix(lua_State * L) {
+int lgapi_create_matrix(lua_State * L) {
 	int args = lua_gettop(L);
 
 	glm::mat4 matrix;
@@ -109,17 +106,17 @@ int luagame::api::create_matrix(lua_State * L) {
 		matrix = glm::mat4();
 		break;
 	case 1: // copy
-		if (is_matrix(L, 1))
-			matrix = *to_matrix(L, 1);
+		if (luagame_ismatrix(L, 1))
+			matrix = *luagame_tomatrix(L, 1);
 		else
 			luaL_argerror(L, 1, "not a matrix");
 		break;
 	case 4: // column vectors
 		matrix = glm::mat4(
-			to_vec4(L, 1),
-			to_vec4(L, 2),
-			to_vec4(L, 3),
-			to_vec4(L, 4));
+			luagame_tovec4(L, 1),
+			luagame_tovec4(L, 2),
+			luagame_tovec4(L, 3),
+			luagame_tovec4(L, 4));
 		break;
 	case 16: // column major components
 		matrix = glm::mat4(
@@ -145,26 +142,26 @@ int luagame::api::create_matrix(lua_State * L) {
 		luaL_error(L, "expected 0 (identity), 1 (copy), 4 (column vectors), or 16 (column-major components) arguments");
 	}
 
-	push_matrix(L, matrix);
+	luagame_pushmatrix(L, matrix);
 
 	return 1;
 }
 
 namespace {
-	int matrix_tostring(lua_State * L) {
-		glm::mat4 matrix = *to_matrix(L, 1);
+	int meta_tostring(lua_State * L) {
+		glm::mat4 matrix = *luagame_tomatrix(L, 1);
 		std::stringstream buffer;
 		buffer << matrix;
 		lua_pushstring(L, buffer.str().c_str());
 		return 1;
 	}
 
-	int matrix_multiply(lua_State * L) {
+	int meta_multiply(lua_State * L) {
 
-		if (is_matrix(L, 1) && is_matrix(L, 2)) {
-			push_matrix(L, to_mat4(L, 1) * to_mat4(L, 2));
-		} else if (is_matrix(L, 1) && is_vector(L, 2)) {
-			push_vector(L, to_mat4(L, 1) * to_vec4(L, 2));
+		if (luagame_ismatrix(L, 1) && luagame_ismatrix(L, 2)) {
+			luagame_pushmatrix(L, luagame_tomat4(L, 1) * luagame_tomat4(L, 2));
+		} else if (luagame_ismatrix(L, 1) && luagame_isvector(L, 2)) {
+			luagame_pushvector(L, luagame_tomat4(L, 1) * luagame_tovec4(L, 2));
 		} else {
 			return luaL_error(L, "invalid operands for matrix multiplication");
 		}
@@ -173,15 +170,15 @@ namespace {
 
 	}
 
-	int matrix_set_identity(lua_State * L) {
-		*to_matrix(L, 1) = glm::mat4();
+	int set_identity(lua_State * L) {
+		*luagame_tomatrix(L, 1) = glm::mat4();
 
 		lua_settop(L, 1);
 		return 1;
 	}
 
-	int matrix_set_ortho(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int set_ortho(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 
 		float left = (float)luaL_checknumber(L, 2);
 		float right = (float)luaL_checknumber(L, 3);
@@ -194,8 +191,8 @@ namespace {
 		return 1;
 	}
 
-	int matrix_set_perspective(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int set_perspective(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 
 		if (lua_gettop(L) < 6) {
 			float fovy = (float)luaL_checknumber(L, 2);
@@ -216,15 +213,15 @@ namespace {
 		return 1;
 	}
 
-	int matrix_translate(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int translate(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 		glm::mat4 result;
 
 		switch (lua_gettop(L)) {
 
 		case 2:
 		{
-			glm::vec3 vector = to_vec3(L, 2);
+			glm::vec3 vector = luagame_tovec3(L, 2);
 			result = glm::translate(*matrix, vector);
 		}
 		break;
@@ -246,22 +243,22 @@ namespace {
 		return 1;
 	}
 
-	int matrix_get_translated(lua_State * L) {
-		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+	int get_translated(lua_State * L) {
+		luagame_pushmatrix(L, luagame_tomat4(L, 1)); // -- push duplicate
 		lua_copy(L, -1, 1); // -- copy it over the original matrix
 		lua_pop(L, 1); // -- remove the initial copy
-		return matrix_translate(L);  // -- call :translate on the new matrix
+		return translate(L);  // -- call :translate on the new matrix
 	}
 
-	int matrix_scale(lua_State * L) {
+	int scale(lua_State * L) {
 
 		if (lua_isnumber(L, 2)) {
-			glm::mat4 * matrix = to_matrix(L, 1);
+			glm::mat4 * matrix = luagame_tomatrix(L, 1);
 			float scalar = (float)lua_tonumber(L, 2);
 			*matrix = glm::scale(*matrix, glm::vec3(scalar, scalar, scalar));
 		} else {
-			glm::mat4 * matrix = to_matrix(L, 1);
-			glm::vec3 vector = to_vec3(L, 2);
+			glm::mat4 * matrix = luagame_tomatrix(L, 1);
+			glm::vec3 vector = luagame_tovec3(L, 2);
 			*matrix = glm::scale(*matrix, vector);
 		}
 
@@ -269,28 +266,28 @@ namespace {
 		return 1;
 	}
 
-	int matrix_get_scaled(lua_State * L) {
-		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+	int get_scaled(lua_State * L) {
+		luagame_pushmatrix(L, luagame_tomat4(L, 1)); // -- push duplicate
 		lua_copy(L, -1, 1); // -- copy it over the original matrix
 		lua_pop(L, 1); // -- remove the initial copy
-		return matrix_scale(L);  // -- call :scale on the new matrix
+		return scale(L);  // -- call :scale on the new matrix
 	}
 
-	int matrix_rotate(lua_State * L) {
+	int rotate(lua_State * L) {
 		switch (lua_gettop(L)) {
 
 		case 3:
 		{
-			glm::mat4 * matrix = to_matrix(L, 1);
+			glm::mat4 * matrix = luagame_tomatrix(L, 1);
 			float angle = (float)lua_tonumber(L, 2);
-			glm::vec3 axis = to_vec3(L, 3);
+			glm::vec3 axis = luagame_tovec3(L, 3);
 			*matrix = glm::rotate(*matrix, angle, axis);
 		}
 		break;
 
 		case 5:
 		{
-			glm::mat4 * matrix = to_matrix(L, 1);
+			glm::mat4 * matrix = luagame_tomatrix(L, 1);
 			float angle = (float)lua_tonumber(L, 2);
 
 			glm::vec3 axis = glm::vec3(
@@ -311,39 +308,39 @@ namespace {
 		return 1;
 	}
 
-	int matrix_get_rotated(lua_State * L) {
-		push_matrix(L, to_mat4(L, 1)); // -- push duplicate
+	int get_rotated(lua_State * L) {
+		luagame_pushmatrix(L, luagame_tomat4(L, 1)); // -- push duplicate
 		lua_copy(L, -1, 1); // -- copy it over the original matrix
 		lua_pop(L, 1); // -- remove the initial copy
-		return matrix_rotate(L);  // -- call :rotate on the new matrix
+		return rotate(L);  // -- call :rotate on the new matrix
 	}
 
-	int matrix_invert(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int invert(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 		*matrix = glm::inverse(*matrix);
 		lua_settop(L, 1);
 		return 1;
 	}
 
-	int matrix_get_inverse(lua_State * L) {
-		push_matrix(L, glm::inverse(to_mat4(L, 1)));
+	int get_inverse(lua_State * L) {
+		luagame_pushmatrix(L, glm::inverse(luagame_tomat4(L, 1)));
 		return 1;
 	}
 
-	int matrix_transpose(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int transpose(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 		*matrix = glm::transpose(*matrix);
 		lua_settop(L, 1);
 		return 1;
 	}
 
-	int matrix_get_transposed(lua_State * L) {
-		push_matrix(L, glm::transpose(to_mat4(L, 1)));
+	int get_transposed(lua_State * L) {
+		luagame_pushmatrix(L, glm::transpose(luagame_tomat4(L, 1)));
 		return 1;
 	}
 
-	int matrix_det(lua_State * L) {
-		glm::mat4 * matrix = to_matrix(L, 1);
+	int det(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
 		lua_pushnumber(L, glm::determinant(*matrix));
 		return 1;
 	}

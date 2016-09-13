@@ -267,7 +267,7 @@ LUA_API void  (lua_setuservalue) (lua_State *L, int idx);
 
 
 /*
-** 'load' and 'call' functions (load and run Lua code)
+** 'lghook_load' and 'call' functions (lghook_load and run Lua code)
 */
 LUA_API void  (lua_callk) (lua_State *L, int nargs, int nresults,
                            lua_KContext ctx, lua_KFunction k);

@@ -2,27 +2,26 @@
 
 #include "vertex.h"
 
-
-luagame::mesh::mesh() :
+luagame::mesh_object::mesh_object() :
 	material	(nullptr),
 	gl_buffer	(NULL),
 	dirty		(false),
 	vertices	(new std::vector<vertex>()) {}
 
-luagame::mesh::~mesh() {
+luagame::mesh_object::~mesh_object() {
 	set_material(nullptr);
 	set_texture((luagame::texture *)nullptr);
 	delete vertices;
 }
 
-void luagame::mesh::clear() {
+void luagame::mesh_object::clear() {
 	if (vertices->size() > 0) {
 		vertices->clear();
 		dirty = true;
 	}
 }
 
-void luagame::mesh::set(const vertex * const vertex_data, int count) {
+void luagame::mesh_object::set(const vertex * const vertex_data, int count) {
 	if (vertices->size() > 0) {
 		vertices->clear();
 		dirty = true;
@@ -35,11 +34,11 @@ void luagame::mesh::set(const vertex * const vertex_data, int count) {
 	}
 }
 
-void luagame::mesh::append(const vertex * vertex) {
+void luagame::mesh_object::append(const vertex * vertex) {
 	append(vertex, 1);
 }
 
-void luagame::mesh::append(const vertex * vertex_data, int count) {
+void luagame::mesh_object::append(const vertex * vertex_data, int count) {
 	if (count > 0) {
 		vertices->reserve(vertices->size() + count);
 		vertices->insert(vertices->end(), vertex_data, vertex_data + count);
@@ -47,39 +46,39 @@ void luagame::mesh::append(const vertex * vertex_data, int count) {
 	}
 }
 
-luagame::texture * luagame::mesh::get_texture() {
+luagame::texture * luagame::mesh_object::get_texture() {
 	return this->texture;
 }
 
-void luagame::mesh::set_texture(const char * filename) {
+void luagame::mesh_object::set_texture(const char * filename) {
 	if (this->texture) this->texture->release();
 	this->texture = new luagame::texture(filename);
 	// texture does not need to be acquired by the creator
 }
 
-void luagame::mesh::set_texture(luagame::texture * new_texture) {
+void luagame::mesh_object::set_texture(luagame::texture * new_texture) {
 	if (this->texture) this->texture->release();
 	this->texture = new_texture;
 	if (this->texture) this->texture->acquire();
 }
 
-luagame::material * luagame::mesh::get_material() {
+luagame::material * luagame::mesh_object::get_material() {
 	return this->material;
 }
 
-void luagame::mesh::set_material(const luagame::material::options & mtlopts) {
+void luagame::mesh_object::set_material(const luagame::material::options & mtlopts) {
 	if (this->material) this->material->release();
 	this->material = new luagame::material(mtlopts);
 	// material does not need to be acquired by the creator
 }
 
-void luagame::mesh::set_material(luagame::material * new_material) {
+void luagame::mesh_object::set_material(luagame::material * new_material) {
 	if (this->material) this->material->release();
 	this->material = new_material;
 	if (this->material) this->material->acquire();
 }
 
-void luagame::mesh::bind() {
+void luagame::mesh_object::bind() {
 	if (!gl_buffer) {
 		glGenVertexArrays(1, &gl_vertex_array);
 		glGenBuffers(1, &gl_buffer);
@@ -123,9 +122,9 @@ void luagame::mesh::bind() {
 	}
 }
 
-size_t luagame::mesh::size() { return vertices->size(); }
+size_t luagame::mesh_object::size() { return vertices->size(); }
 
-void luagame::mesh::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix) {
+void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix) {
 
 	material->bind();
 

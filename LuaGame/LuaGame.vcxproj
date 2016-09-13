@@ -137,9 +137,12 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\binding\lgapi.cpp" />
-    <ClCompile Include="src\binding\lgapi_matrix.cpp" />
-    <ClCompile Include="src\binding\lgapi_vector.cpp" />
-    <ClCompile Include="src\binding\lgapi_window.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_mesh.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_texture.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_vertex.cpp" />
+    <ClCompile Include="src\binding\lgapi_math_matrix.cpp" />
+    <ClCompile Include="src\binding\lgapi_math_vector.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_window.cpp" />
     <ClCompile Include="src\binding\binding.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\graphics\material.cpp" />
@@ -151,15 +154,13 @@
     <ClCompile Include="src\soil\SOIL.c" />
     <ClCompile Include="src\soil\stb_image_aug.c" />
     <ClCompile Include="src\util\any_key.cpp" />
-    <ClCompile Include="src\graphics\graphics_context.cpp" />
+    <ClCompile Include="src\graphics\window_context.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\binding\lgapi.h" />
     <ClInclude Include="src\binding\lgapi_math.h" />
-    <ClInclude Include="src\binding\lgapi_matrix.h" />
-    <ClInclude Include="src\binding\lgapi_vector.h" />
-    <ClInclude Include="src\binding\lgapi_window.h" />
     <ClInclude Include="src\binding\binding.h" />
+    <ClInclude Include="src\binding\lgapi_gfx.h" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
@@ -177,7 +178,7 @@
     <ClInclude Include="src\soil\stb_image_aug.h" />
     <ClInclude Include="src\util\any_key.h" />
     <ClInclude Include="src\common.h" />
-    <ClInclude Include="src\graphics\graphics_context.h" />
+    <ClInclude Include="src\graphics\window_context.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="architecture.md" />

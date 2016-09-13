@@ -10,16 +10,14 @@
 #include "../graphics/graphics_math.h"
 
 namespace luagame {
-
-
 	struct vertex; // so as to avoid including glm into this header
 
-	class mesh : virtual public reference_counted {
+	class mesh_object : virtual public reference_counted {
 	public:
 
-		mesh();
+		mesh_object();
 
-		virtual ~mesh();
+		virtual ~mesh_object();
 
 	public:
 

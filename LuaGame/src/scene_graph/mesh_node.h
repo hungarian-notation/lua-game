@@ -16,7 +16,7 @@ namespace luagame {
 	class mesh_node : virtual public scene_node {
 	public:
 
-		mesh_node(mesh * mesh) : mesh(mesh) {
+		mesh_node(mesh_object * mesh) : mesh(mesh) {
 			_notnull(mesh);
 			this->mesh->acquire();
 		}
@@ -29,7 +29,7 @@ namespace luagame {
 
 	public:
 
-		mesh * get_mesh() { return mesh; }
+		mesh_object * get_mesh() { return mesh; }
 
 		material * get_material() { return mesh->get_material(); }
 
@@ -37,7 +37,7 @@ namespace luagame {
 
 	private:
 
-		mesh * mesh;
+		mesh_object * mesh;
 
 	};
 }

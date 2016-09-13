@@ -1,9 +1,21 @@
-#include "graphics_context.h"
+#include "window_context.h"
 #include "../common.h"
 
 using namespace luagame;
 
-luagame::graphics_context::graphics_context(int width, int height, std::string title) : title(title) {
+namespace {
+	thread_local window_context * thread_window;
+}
+
+window_context * luagame::get_current_window() {
+	return thread_window;
+}
+
+luagame::window_context::window_context(int width, int height, std::string title) : title(title) {
+	if (thread_window) {
+		_err("window already bound to this thread");
+	}
+
 	if (!glfwInit())
 		_err("failed to initialize");
 	else {
@@ -16,6 +28,8 @@ luagame::graphics_context::graphics_context(int width, int height, std::string t
 		glfwMakeContextCurrent(glfw_window);
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+		thread_window = this;
+
 		if (!glfw_window) {
 			_err("failed to create window");
 			glfwTerminate();
@@ -27,30 +41,32 @@ luagame::graphics_context::graphics_context(int width, int height, std::string t
 	}
 }
 
-luagame::graphics_context::~graphics_context() {
+luagame::window_context::~window_context() {
+	thread_window = nullptr;
+
 	glfwTerminate();
 
 	_log("terminated glfw");
 }
 
-void luagame::graphics_context::poll_events() {
+void luagame::window_context::poll_events() {
 	glfwPollEvents();
 }
 
-void luagame::graphics_context::swap_buffers() {
+void luagame::window_context::swap_buffers() {
 	glfwSwapBuffers(glfw_window);
 }
 
-void luagame::graphics_context::set_title(std::string new_title) {
+void luagame::window_context::set_title(std::string new_title) {
 	glfwSetWindowTitle(glfw_window, new_title.c_str());
 	title = new_title;
 	_log("set window title to: %s", new_title.c_str());
 }
 
-bool luagame::graphics_context::get_should_close() {
+bool luagame::window_context::get_should_close() {
 	return glfwWindowShouldClose(glfw_window) == GLFW_TRUE;
 }
 
-void luagame::graphics_context::set_should_close(bool should_close) {
+void luagame::window_context::set_should_close(bool should_close) {
 	glfwSetWindowShouldClose(glfw_window, should_close);
 }

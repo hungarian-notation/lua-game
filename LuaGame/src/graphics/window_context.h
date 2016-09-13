@@ -6,12 +6,12 @@
 #include "texture.h"
 
 namespace luagame {
-	class graphics_context : virtual public reference_counted {
+	class window_context : virtual public reference_counted {
 	public:
 
-		graphics_context(int width = 800, int height = 600, std::string title = "luagame");
+		window_context(int width = 800, int height = 600, std::string title = "luagame");
 
-		virtual ~graphics_context();
+		virtual ~window_context();
 
 	public:
 
@@ -23,7 +23,7 @@ namespace luagame {
 
 		glm::ivec2 get_size() {
 			glm::ivec2 window_size;
-			glfwGetWindowSize(glfw_window, &window_size.x, &window_size.y);
+			glfwGetFramebufferSize(glfw_window, &window_size.x, &window_size.y);
 			return window_size;
 		}
 
@@ -47,4 +47,6 @@ namespace luagame {
 		std::string		title;
 
 	};
+
+	window_context * get_current_window();
 }

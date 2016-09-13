@@ -1,6 +1,6 @@
 #include "common.h"
 
-#include "graphics\graphics_context.h"
+#include "graphics\window_context.h"
 #include "graphics\mesh.h"
 
 #include "scene_graph\scene_manager.h"
@@ -30,7 +30,7 @@ int old_main();
 int main() {
 	// old_main();
 
-	int result = api::execute();
+	int result = luagame_execute();
 	util::any_key();
 	return result;
 }
@@ -38,13 +38,13 @@ int main() {
 int old_main() {
 	srand(time(NULL));
 
-	luagame::graphics_context * graphics = new luagame::graphics_context();
+	luagame::window_context * graphics = new luagame::window_context();
 
 	graphics->set_title("This is my title!");
 
 	// luagame::scene_graph * scene = new luagame::scene_graph(graphics);
 
-	luagame::mesh * mesh = new luagame::mesh;
+	luagame::mesh_object * mesh = new luagame::mesh_object;
 
 	luagame::vertex vertices[4];
 
@@ -98,7 +98,7 @@ int old_main() {
 #define MODEL_COUNT 1000
 
 	struct model {
-		luagame::mesh * mesh;
+		luagame::mesh_object * mesh;
 		glm::mat4 transform;
 	};
 
