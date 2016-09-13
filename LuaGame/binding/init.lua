@@ -53,17 +53,18 @@ function luagame.load ()
 
 	instances = {}
 
-	for i = 1, 1000 do
+	for i = 1, 10000 do
 		local transform = luagame.matrix()
-
-		transform:translate(srnd(10), srnd(10), srnd(10))
 		
-		local angle = srnd(math.pi * 2)
+		local dir = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
+		
+		transform:translate(dir * 50 * math.random())
 
+		local angle = srnd(math.pi * 2)
 		local axis = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
 
 		transform:rotate(angle, axis)
-
+		transform:scale(3)
 		instances[i] = transform 
 	end
 end
@@ -71,11 +72,11 @@ end
 function luagame.update (dt)
 	transform.view:rotate((1 / 2) * math.pi * dt, axis_of_rotation)
 	local width, height = luagame.window:get_width(), luagame.window:get_height()
-	transform.projection:set_perspective(math.pi / 2, width, height, 1.0, 100.0)
+	transform.projection:set_perspective(math.pi / 2, width, height, 1.0, 300.0)
 end
 
 function luagame.draw ()
-	local view = luagame.matrix():translate(0, 0, -15) * transform.view
+	local view = luagame.matrix():translate(0, 0, -100) * transform.view
 	for i, model_matrix in pairs(instances) do
 		mesh:draw(model_matrix, view, transform.projection)
 	end
