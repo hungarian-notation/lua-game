@@ -149,6 +149,7 @@
     <ClCompile Include="src\graphics\mesh.cpp" />
     <ClCompile Include="src\graphics\shader_loader.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\reference_counted.cpp" />
     <ClCompile Include="src\soil\image_DXT.c" />
     <ClCompile Include="src\soil\image_helper.c" />
     <ClCompile Include="src\soil\SOIL.c" />

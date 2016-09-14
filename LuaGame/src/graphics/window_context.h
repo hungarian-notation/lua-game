@@ -47,6 +47,4 @@ namespace luagame {
 		std::string		title;
 
 	};
-
-	window_context * get_current_window();
 }

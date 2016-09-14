@@ -3,18 +3,7 @@
 
 using namespace luagame;
 
-namespace {
-	thread_local window_context * thread_window;
-}
-
-window_context * luagame::get_current_window() {
-	return thread_window;
-}
-
 luagame::window_context::window_context(int width, int height, std::string title) : title(title) {
-	if (thread_window) {
-		_err("window already bound to this thread");
-	}
 
 	if (!glfwInit())
 		_err("failed to initialize");
@@ -28,7 +17,6 @@ luagame::window_context::window_context(int width, int height, std::string title
 		glfwMakeContextCurrent(glfw_window);
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-		thread_window = this;
 
 		if (!glfw_window) {
 			_err("failed to create window");
@@ -42,8 +30,6 @@ luagame::window_context::window_context(int width, int height, std::string title
 }
 
 luagame::window_context::~window_context() {
-	thread_window = nullptr;
-
 	glfwTerminate();
 
 	_log("terminated glfw");
