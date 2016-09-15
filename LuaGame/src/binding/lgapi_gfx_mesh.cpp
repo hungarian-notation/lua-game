@@ -34,6 +34,8 @@ int lgapi_create_mesh(lua_State * L) {
 	material::options opts = luagame_tomaterialoptions(L, 1);
 
 	mesh_object * mesh_object = new luagame::mesh_object();
+
+	mesh_object->acquire();
 	mesh_object->set_material(opts);
 
 	luagame_pushmesh(L, mesh_object);

@@ -53,7 +53,7 @@ luagame::texture * luagame::mesh_object::get_texture() {
 void luagame::mesh_object::set_texture(const char * filename) {
 	if (this->texture) this->texture->release();
 	this->texture = new luagame::texture(filename);
-	// texture does not need to be acquired by the creator
+	this->texture->acquire();
 }
 
 void luagame::mesh_object::set_texture(luagame::texture * new_texture) {
@@ -69,7 +69,7 @@ luagame::material * luagame::mesh_object::get_material() {
 void luagame::mesh_object::set_material(const luagame::material::options & mtlopts) {
 	if (this->material) this->material->release();
 	this->material = new luagame::material(mtlopts);
-	// material does not need to be acquired by the creator
+	this->material->acquire();
 }
 
 void luagame::mesh_object::set_material(luagame::material * new_material) {

@@ -5,56 +5,112 @@
 #include "common.h"
 
 #include <stdexcept>
-#include <list>
+#include <vector>
 
 namespace luagame {
-
 	class reference_counted;
-	
-	// A reference to a reference_counted object that does not prevent deallocation of that object, but is instead
-	// notified when the referenced object is deallocated.
-	class weak_reference {
-	public:
-		weak_reference(reference_counted * referenced);
-		~weak_reference();
-
-	public:
-		// Marks this reference as invalid. This should only be called by the referenced object.
-		void invalidate();
-
-		// Returns true if this light reference is still valid.
-		bool is_vaid();
-
-		// Gets a pointer to the referenced object.
-		//
-		// This method throws and exception if this reference is invalid.
-		template <class reftype> reftype * get() {
-			if (is_valid()) {
-				return dynamic_cast<reftype *>(target);
-			} else throw std::exception("reference is not valid");
-		}
-	private:
-		reference_counted * target;
-	};
+	class reference_observer;
 
 #ifdef LUAGAME_TRACK_GLOBAL_REFERENCES
 	static int global_referenced_objects = 0;
 #endif
 
+	// -- REFERENCE OBSERVER
+
+	// -- REFERENCE COUNTED
+
 	class reference_counted {
 	public:
 
 		reference_counted();
-
 		virtual ~reference_counted();
 
-		void acquire();
-		bool release();
-		void add_light_reference(weak_reference * ref);
-		void remove_light_reference(weak_reference * ref);
+		virtual void acquire();
+		virtual bool release();
+
+		void add_observer(reference_observer * observer);
+		void remove_observer(reference_observer * observer);
 
 	private:
-		int								references;
-		std::list<weak_reference*>	light_references;
+		int											references;
+		std::vector<reference_observer*>	observers;
+	};
+
+	class reference_observer {
+	public:
+
+		reference_observer(reference_counted * observed) : resource_ptr(observed) {
+			if (observed)
+				observed->add_observer(this);
+		}
+
+		reference_observer() : reference_observer(nullptr) {
+
+		}
+
+		~reference_observer() {
+			_log("dcons reference_observer");
+
+			if (is_valid()) {
+				if (resource_ptr == (reference_counted*)0xDDDDDDDD) _err("resource does not exist");
+				resource_ptr->remove_observer(this);
+				resource_ptr = nullptr;
+			}
+		}
+
+		bool is_valid() {
+			return resource_ptr != nullptr;
+		}
+
+		template <class rtype> rtype * get() { 
+			return dynamic_cast<rtype *>(resource_ptr);
+		}
+
+		void invalidate() {
+			resource_ptr = nullptr;
+		}
+
+	private:
+		reference_counted * resource_ptr;
+	};
+
+	// -- REFERENCED
+
+	template <class rtype>
+	class reference {
+	public:
+		reference(rtype * ref) : ref(ref) { if (ref) ref->acquire(); }
+		~reference() { if (ref) ref->release(); }
+		rtype * get() { return ref; }
+	private:
+		rtype * ref;
+	};
+
+	// -- weak_reference
+
+	template <class rtype>
+	class weak_reference {
+	public:
+
+		weak_reference(rtype * ref) : observer_ptr(new reference_observer(ref)) {}
+
+		weak_reference() : weak_reference(nullptr) {}
+
+		~weak_reference() {
+			_log("dcons weak ref");
+
+			if (observer_ptr) {
+				if (this == (weak_reference*)0xDDDDDDDD) _err("I do not exist.");
+				delete observer_ptr;
+				observer_ptr = nullptr;
+			}
+		}
+
+		bool valid() { return observer_ptr->is_valid(); }
+		rtype * get() { return observer_ptr->get<rtype>(); }
+
+	private:
+		reference_observer * observer_ptr;
 	};
 }
+

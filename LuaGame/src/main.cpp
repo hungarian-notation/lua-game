@@ -11,6 +11,7 @@
 #include <glm/gtx/io.hpp>
 
 #include <cstdlib>
+#include <string>
 
 #include "graphics\shader_loader.h"
 #include "graphics\vertex.h"
@@ -28,9 +29,21 @@ float randf() {
 int old_main();
 
 int main() {
+	int result = 0;
+
+	{
+		auto window(luagame::reference<window_context>(new luagame::window_context()));
+
+		auto tex_reference = new luagame::reference<luagame::texture>(new luagame::texture("img_test.png"));
+		auto same_reference = new luagame::weak_reference<luagame::texture>(tex_reference->get());
+
+		delete same_reference;
+		delete tex_reference;
+	}
+
 	// old_main();
 
-	int result = luagame_execute();
+	// result = luagame_execute();
 	util::any_key();
 	return result;
 }

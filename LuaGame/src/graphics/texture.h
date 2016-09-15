@@ -28,6 +28,8 @@ namespace luagame {
 
 			_log("created texture %d", gl_texture);
 		}
+		
+		texture(std::string string) : texture(string.c_str()) {}
 
 		~texture() override {
 			glDeleteTextures(1, &gl_texture);

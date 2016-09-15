@@ -47,6 +47,7 @@ void luagame_pushwindow(lua_State * L, window_context * ctx) {
 
 int luagame_newwindow(lua_State * L) {
 	window_context * ctx = new window_context(); // -- owned by lua
+	ctx->acquire();
 	luagame_pushwindow(L, ctx);
 	return 1;
 }

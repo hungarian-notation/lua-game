@@ -22,6 +22,7 @@ void luagame_pushtexture(lua_State * L, texture * tex) {
 int lgapi_create_texture(lua_State * L) {
 	const char * filename = luaL_checkstring(L, 1);
 	texture * tex = new luagame::texture(filename);
+	tex->acquire();
 	luagame_pushtexture(L, tex);
 	return 1;
 }
