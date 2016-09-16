@@ -142,10 +142,14 @@
     <ClCompile Include="src\binding\lgapi_gfx_vertex.cpp" />
     <ClCompile Include="src\binding\lgapi_math_matrix.cpp" />
     <ClCompile Include="src\binding\lgapi_math_vector.cpp" />
-    <ClCompile Include="src\binding\lgapi_gfx_window.cpp" />
+    <ClCompile Include="src\binding\lgmodule_keyboard.cpp" />
+    <ClCompile Include="src\binding\lgmodule_window.cpp" />
+    <ClCompile Include="src\binding\lgmodule_core.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\graphics\material_object.cpp" />
-    <ClCompile Include="src\graphics\mesh_object.cpp" />
+    <ClCompile Include="src\graphics\mesh_object.cpp">
+      <FileType>CppCode</FileType>
+    </ClCompile>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\soil\image_DXT.c" />
     <ClCompile Include="src\soil\image_helper.c" />
@@ -159,6 +163,8 @@
     <ClInclude Include="src\binding\lgapi_math.h" />
     <ClInclude Include="src\binding\lgapi_core.h" />
     <ClInclude Include="src\binding\lgapi_gfx.h" />
+    <ClInclude Include="src\binding\lgmodule.h" />
+    <ClInclude Include="src\binding\lgmodule_mouse.cpp" />
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
@@ -193,6 +199,9 @@
     <Image Include="img_test.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="doc\api.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

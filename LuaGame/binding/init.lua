@@ -8,6 +8,8 @@ end
 
 local axis_of_rotation = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
 
+luagame.window.set_title("This is the new title!")
+
 function luagame.load ()
 	transform = {
 		view		= luagame.matrix(),
@@ -49,7 +51,7 @@ function luagame.load ()
 
 	instances = {}
 
-	for i = 1, 10000 do
+	for i = 1, 300 do
 		local transform = luagame.matrix()
 		
 		local dir = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
@@ -60,7 +62,7 @@ function luagame.load ()
 		local axis = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
 
 		transform:rotate(angle, axis)
-		transform:scale(3)
+		transform:scale(5)
 		instances[i] = transform 
 	end
 end

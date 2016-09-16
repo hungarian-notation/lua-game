@@ -5,5 +5,3 @@
 #include "lgapi_gfx.h"
 
 int luagame_execute();
-
-extern "C" int luaopen_luagame(lua_State * L);

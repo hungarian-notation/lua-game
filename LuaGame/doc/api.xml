@@ -1,0 +1,15 @@
+﻿<module name="luagame">
+  <module name="window">
+    
+    A collection of functions that query and manipulate the game window.
+    
+    <function name="get_title">Gets the current title of the window.</function>
+    <function name="set_title">
+      <args>
+        <arg type="string" name="title"/>
+      </args>
+      
+      Sets the title of the window.
+    </function>
+  </module>
+</module>

@@ -10,12 +10,6 @@
 #include "..\graphics\material_object.h"
 #include "..\graphics\mesh_object.h"
 
-// WINDOW
-
-void luagame_pushwindow(lua_State * L, std::shared_ptr<luagame::window_context> window);
-
-// int luagame_newwindow(lua_State * L);
-
 // TEXTURE
 
 int lgapi_create_texture(lua_State * L);

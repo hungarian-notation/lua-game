@@ -34,6 +34,14 @@ struct luagame_context {
 std::shared_ptr<luagame_context> luagame_getcontext(lua_State * L);
 std::shared_ptr<luagame::window_context> luagame_getwindow(lua_State * L);
 
+// t.name = func -- where t is the table at idx
+void luagame_setfunc(lua_State * L, int idx, const char * name, lua_CFunction func);
+
+// t.name = func -- where t is the table at the top of the stack
+void luagame_setfunc(lua_State * L, const char * name, lua_CFunction func);
+
+int luagame_callhook(lua_State * L, const char * hook, int nargs = 0, int nres = 0);
+
 namespace _luagame_header_local {
 	template <typename T>
 	void _pushshared(lua_State * L, std::shared_ptr<T> ptr) {
