@@ -1,29 +1,35 @@
 #pragma once
 
-#include "binding.h"
+#include "lgapi_core.h"
 
 #include "..\graphics\graphics_math.h"
 
 #include "..\graphics\window_context.h"
-#include "..\graphics\texture.h"
+#include "..\graphics\texture_object.h"
 #include "..\graphics\vertex.h"
-#include "..\graphics\material.h"
-#include "..\graphics\mesh.h"
+#include "..\graphics\material_object.h"
+#include "..\graphics\mesh_object.h"
 
-#define LUAGAME_WINDOW "luagame_window"
+// WINDOW
 
-int luagame_newwindow(lua_State * L);
+void luagame_pushwindow(lua_State * L, std::shared_ptr<luagame::window_context> window);
 
-luagame::window_context * luagame_towindow(lua_State * L, int idx);
+// int luagame_newwindow(lua_State * L);
 
-#define LUAGAME_TEXTURE "luagame_texture"
+// TEXTURE
 
 int lgapi_create_texture(lua_State * L);
 
-int luagame_istexture(lua_State* L, int idx);
-luagame::texture * luagame_totexture(lua_State * L, int idx);
+// MESH
 
-// LUAGAME_VERTEX
+#define LUAGAME_MTLOPT_COLOR		"use_color"
+#define LUAGAME_MTLOPT_NORMALS		"use_normals"
+#define LUAGAME_MTLOPT_TEXTURE		"use_texture"
+#define LUAGAME_MTLOPT_TRANSPARENCY "use_transparency"
+
+int lgapi_create_mesh(lua_State * L);
+
+// VERTEX HANDLING
 
 #define LUAGAME_VERTEX_POSITION		"pos"
 #define LUAGAME_VERTEX_COLOR		"clr"
@@ -37,15 +43,6 @@ void luagame_pushvertex(lua_State * L, const luagame::vertex &vert);
 
 int lgapi_vertex_tostring(lua_State * L);
 
-#define LUAGAME_MESH "luagame_mesh"
+// MATERIAL OPTIONS HANDLING
 
-#define LUAGAME_MTLOPT_COLOR		"use_color"
-#define LUAGAME_MTLOPT_NORMALS		"use_normals"
-#define LUAGAME_MTLOPT_TEXTURE		"use_texture"
-#define LUAGAME_MTLOPT_TRANSPARENCY "use_transparency"
-
-int lgapi_create_mesh(lua_State * L);
-
-
-luagame::material::options luagame_tomaterialoptions(lua_State * L, int idx);
-luagame::mesh_object * luagame_tomesh(lua_State * L, int idx);
+luagame::material_object::options luagame_tomaterialoptions(lua_State * L, int idx);

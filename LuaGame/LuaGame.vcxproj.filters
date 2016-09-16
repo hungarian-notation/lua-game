@@ -24,9 +24,6 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,16 +39,7 @@
     <ClCompile Include="src\soil\stb_image_aug.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\shader_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\binding\lgapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\binding\binding.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\window_context.cpp">
@@ -75,7 +63,10 @@
     <ClCompile Include="src\binding\lgapi_gfx_mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\reference_counted.cpp">
+    <ClCompile Include="src\graphics\mesh_object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\material_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,18 +75,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\conf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\reference_counted.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\graphics_math.h">
@@ -122,9 +101,6 @@
     <ClInclude Include="src\gl_headers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\shader_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -137,13 +113,25 @@
     <ClInclude Include="src\binding\lgapi_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\binding.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\window_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\binding\lgapi_gfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\material_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\texture_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shared_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binding\lgapi_core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

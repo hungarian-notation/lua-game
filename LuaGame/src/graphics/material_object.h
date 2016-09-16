@@ -5,9 +5,10 @@
 
 #include <sstream>
 #include <fstream>
+#include <tuple>
 
 namespace luagame {
-	class material : virtual public reference_counted {
+	class material_object {
 	public:
 
 		struct options {
@@ -15,9 +16,10 @@ namespace luagame {
 			unsigned use_color : 1;
 			unsigned use_normal : 1;
 			unsigned use_texture : 1;
-
 			unsigned use_transparency : 1;
+
 		};
+
 
 		struct program_targets {
 			GLint position_attr,
@@ -32,13 +34,13 @@ namespace luagame {
 
 	public:
 
-		material(const material::options &mtlops);
+		material_object(const material_object::options &mtlops);
 
-		virtual ~material();
+		virtual ~material_object();
 
 	public:
 
-		const material::options & opts() { return mtlopts; }
+		const material_object::options & opts() { return mtlopts; }
 
 		void bind() const;
 
@@ -46,13 +48,15 @@ namespace luagame {
 
 	private:
 
-		const material::options		mtlopts;
+		const material_object::options		mtlopts;
 
 		GLuint						gl_program;
 		program_targets				targets;
 
 	};
 
-	std::string get_shader(const GLenum &type, const material::options &options);
-	std::string generate_preamble(const material::options &options);
+	bool operator <(const material_object::options& x, const material_object::options& y);
+
+	std::string get_shader(const GLenum &type, const material_object::options &options);
+	std::string generate_preamble(const material_object::options &options);
 }

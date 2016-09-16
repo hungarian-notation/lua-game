@@ -9,45 +9,29 @@ namespace {
 	int draw(lua_State * L);
 }
 
-void luagame_pushmesh(lua_State * L, mesh_object * mesh_object) {
-	luagame_pushref(L, mesh_object);
+void luagame_pushmesh(lua_State * L, meshptr mesh) {
+	luaL_Reg functions[] = {
+		{ "set_texture", &set_texture },
+		{ "append", &append },
+		{ "draw", &draw },
 
-	if (luaL_newmetatable(L, LUAGAME_MESH)) {
-		luaL_Reg functions[] = {
-			{ "set_texture", &set_texture },
-			{ "append", &append },
-			{ "draw", &draw },
+		{ NULL, NULL }
+	};
 
-			{ LUA_METAMETHOD_GC,	&lgapi_releaseref },
-			{ NULL, NULL }
-		};
-
-		luaL_setfuncs(L, functions, NULL);
-		lua_pushvalue(L, -1);
-		lua_setfield(L, -1, LUA_METAMETHOD_INDEX);
-	}
-
-	lua_setmetatable(L, -2);
+	luagame_pushobj<mesh_object>(L, mesh, functions);
 }
 
 int lgapi_create_mesh(lua_State * L) {
-	material::options opts = luagame_tomaterialoptions(L, 1);
+	material_object::options opts = luagame_tomaterialoptions(L, 1);
+	auto mesh = std::make_shared<luagame::mesh_object>();
+	mesh->set_material(opts, luagame_getcontext(L)->material_cache);
+	luagame_pushmesh(L, mesh);
 
-	mesh_object * mesh_object = new luagame::mesh_object();
-
-	mesh_object->acquire();
-	mesh_object->set_material(opts);
-
-	luagame_pushmesh(L, mesh_object);
 	return 1;
 }
 
-mesh_object * luagame_tomesh(lua_State * L, int idx) {
-	return luagame_unwrapref<mesh_object>(luaL_checkudata(L, idx, LUAGAME_MESH));
-}
-
-material::options luagame_tomaterialoptions(lua_State * L, int idx) {
-	material::options opts = {};
+material_object::options luagame_tomaterialoptions(lua_State * L, int idx) {
+	material_object::options opts = {};
 
 	opts.use_position = true;
 
@@ -72,13 +56,12 @@ material::options luagame_tomaterialoptions(lua_State * L, int idx) {
 
 namespace {
 	int set_texture(lua_State * L) {
-		mesh_object * mesh = luagame_tomesh(L, 1);
-
+		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
 		if (lua_isstring(L, 2)) {
-			mesh->set_texture(lua_tostring(L, 2));
-		} else if (luagame_istexture(L, 2)) {
-			mesh->set_texture(luagame_totexture(L, 2));
+			mesh->set_texture(lua_tostring(L, 2), luagame_getcontext(L)->texture_cache);
+		} else if (luagame_isobj<texture_object>(L, 2)) {
+			mesh->set_texture(luagame_checkobj<texture_object>(L, 2));
 		} else {
 			luaL_argerror(L, 2, "expected filename or texture object");
 		}
@@ -87,12 +70,12 @@ namespace {
 	}
 
 	int append(lua_State * L) {
-		mesh_object * mesh = luagame_tomesh(L, 1);
+		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
 		luaL_checktype(L, 2, LUA_TTABLE);
 
 		lua_len(L, 2);
-		int length = lua_tointeger(L, -1);
+		int length = (int)lua_tointeger(L, -1);
 
 		_log("appending %d vertices", length);
 
@@ -103,7 +86,7 @@ namespace {
 			vertices[i] = luagame_checkvertex(L, -1);
 			lua_pop(L, 1);
 		}
-		
+
 		mesh->append(vertices, length);
 
 		_log("finished appending", length);
@@ -114,7 +97,7 @@ namespace {
 	}
 
 	int draw(lua_State * L) {
-		mesh_object * mesh = luagame_tomesh(L, 1);
+		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
 		glm::mat4 model = luagame_tomat4(L, 2);
 		glm::mat4 view = luagame_tomat4(L, 3);

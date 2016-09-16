@@ -1,12 +1,11 @@
 #pragma once
 
 #include "../common.h"
-
-#include "../scene_graph/scene_manager.h"
-#include "texture.h"
+#include "../graphics/graphics_math.h"
+#include "texture_object.h"
 
 namespace luagame {
-	class window_context : virtual public reference_counted {
+	class window_context {
 	public:
 
 		window_context(int width = 800, int height = 600, std::string title = "luagame");

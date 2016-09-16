@@ -1,17 +1,19 @@
 #include "lgapi.h"
 
 #include "..\graphics\window_context.h"
+#include "..\shared_cache.h"
 
 #include <chrono>
 
 using namespace luagame;
 using namespace std;
 
+#define LUAGAME_R_CONTEXT "LUAGAME_CONTEXT"
+#define LUAGAME_R_WINDOW "LUAGAME_WINDOW"
 
 int luaopen_luagame(lua_State * L) {
 
 	luaL_Reg funcs[] = {
-
 		{ "matrix", &lgapi_create_matrix },
 		{ "vector", &lgapi_create_vector },
 
@@ -19,19 +21,37 @@ int luaopen_luagame(lua_State * L) {
 		{ "create_mesh", &lgapi_create_mesh },
 
 		{ "vertex_tostring", &lgapi_vertex_tostring },
-
 		{ NULL, NULL }
 	};
 
 	luaL_newlib(L, funcs);
 
-	luagame_newwindow(L);
+	luagame_pushobj<luagame_context>(L, std::make_shared<luagame_context>());
+	lua_setfield(L, LUA_REGISTRYINDEX, LUAGAME_R_CONTEXT);
+
+	// -- bind window to luagame.window AND to LUAGAME_R_CONTEXT
+
+	luagame_pushwindow(L, std::make_shared<luagame::window_context>());
+
+	lua_pushvalue(L, -1);
+	lua_setfield(L, LUA_REGISTRYINDEX, LUAGAME_R_WINDOW);
+
 	lua_setfield(L, -2, "window");
 
 	lua_pushvalue(L, -1);
 	lua_setglobal(L, "luagame");
 
 	return 1;
+}
+
+std::shared_ptr<luagame_context> luagame_getcontext(lua_State * L) {
+	lua_getfield(L, LUA_REGISTRYINDEX, LUAGAME_R_CONTEXT);
+	return luagame_checkobj<luagame_context>(L, -1);
+}
+
+std::shared_ptr<window_context> luagame_getwindow(lua_State * L) {
+	lua_getfield(L, LUA_REGISTRYINDEX, LUAGAME_R_WINDOW);
+	return luagame_checkobj<window_context>(L, -1);
 }
 
 namespace {
@@ -50,7 +70,7 @@ int luagame_execute() {
 
 	lua_getfield(L, -1, "window");
 
-	window_context * window = luagame_towindow(L, -1);
+	auto window = luagame_checkobj<window_context>(L, -1);
 
 	lua_pop(L, 2);
 
@@ -63,14 +83,15 @@ int luagame_execute() {
 	if (lghook_load(L) != LUA_OK)
 		return print_error(L);
 
-	chrono::high_resolution_clock clock;
-
 	chrono::high_resolution_clock::time_point previous, now;
 
-	previous = now = clock.now();
+	previous = now = chrono::high_resolution_clock::now();
+
+	lua_gc(L, LUA_GCCOLLECT, 0);
+	lua_gc(L, LUA_GCSTOP, 0);
 
 	while (!window->get_should_close()) {
-		now = clock.now();
+		now = chrono::high_resolution_clock::now();
 		float delta = chrono::duration_cast<chrono::duration<float>>((now - previous)).count();
 		previous = now;
 
@@ -85,6 +106,8 @@ int luagame_execute() {
 			return print_error(L);
 
 		window->swap_buffers();
+
+		lua_gc(L, LUA_GCSTEP, 0);
 	}
 
 	lua_close(L);
@@ -99,6 +122,7 @@ namespace {
 		if (lua_getfield(L, -1, hook) == LUA_TFUNCTION) {
 			lua_insert(L, (-2 - nargs));
 			lua_pop(L, 1);
+
 			return lua_pcall(L, nargs, nres, 0);
 		} else {
 			lua_pop(L, 2 + nargs);

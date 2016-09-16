@@ -1,15 +1,13 @@
 #pragma once
 
-#define WIN32
-
 #include "..\soil\SOIL.h"
 #include "..\common.h"
 
 namespace luagame {
-	class texture : public reference_counted {
+	class texture_object {
 	public:
 		
-		texture(const char * filename) {
+		texture_object(const char * filename) {
 			luagame_check_gl_errors();
 
 			gl_texture = SOIL_load_OGL_texture(
@@ -29,9 +27,9 @@ namespace luagame {
 			_log("created texture %d", gl_texture);
 		}
 		
-		texture(std::string string) : texture(string.c_str()) {}
+		texture_object(std::string string) : texture_object(string.c_str()) {}
 
-		~texture() override {
+		~texture_object() {
 			glDeleteTextures(1, &gl_texture);
 			_log("deleted texture %d", gl_texture);
 		}

@@ -16,11 +16,7 @@ function luagame.load ()
 
 	transform.view:set_identity()
 
-
-	mesh = luagame.create_mesh {
-		use_texture = true,
-		use_transparency = true
-	}
+	mesh = luagame.create_mesh { use_texture = true, use_transparency = true }
 
 	mesh:set_texture("img_test.png")
 

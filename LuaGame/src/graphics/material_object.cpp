@@ -1,4 +1,4 @@
-#include "material.h"
+#include "material_object.h"
 
 #include <fstream>
 #include <iostream>
@@ -73,7 +73,13 @@ namespace {
 	}
 }
 
-string luagame::get_shader(const GLenum &type, const material::options &options) {
+bool luagame::operator<(const material_object::options & x, const material_object::options & y) {
+	return
+		std::tie(x.use_position, x.use_color, x.use_normal, x.use_texture, x.use_transparency) <
+		std::tie(y.use_position, y.use_color, y.use_normal, y.use_texture, y.use_transparency);
+}
+
+string luagame::get_shader(const GLenum &type, const material_object::options &options) {
 	switch (type) {
 	case GL_VERTEX_SHADER:
 		return load_shader("vertex.glsl", generate_preamble(options));
@@ -86,7 +92,7 @@ string luagame::get_shader(const GLenum &type, const material::options &options)
 	}
 }
 
-string luagame::generate_preamble(const material::options &options) {
+string luagame::generate_preamble(const material_object::options &options) {
 	stringstream buf;
 
 	buf << "#version 330" << endl;
@@ -112,7 +118,7 @@ string luagame::generate_preamble(const material::options &options) {
 	return buf.str();
 }
 
-luagame::material::material(const material::options & mtlopts) : mtlopts(mtlopts) {
+luagame::material_object::material_object(const material_object::options & mtlopts) : mtlopts(mtlopts) {
 	std::string vert, frag;
 
 	vert = get_shader(GL_VERTEX_SHADER, mtlopts);
@@ -139,10 +145,10 @@ luagame::material::material(const material::options & mtlopts) : mtlopts(mtlopts
 	targets.proj_uni = glGetUniformLocation(gl_program, "u_Proj");
 }
 
-luagame::material::~material() {
+luagame::material_object::~material_object() {
 	glDeleteProgram(gl_program);
 }
 
-void luagame::material::bind() const {
+void luagame::material_object::bind() const {
 	glUseProgram(gl_program);
 }

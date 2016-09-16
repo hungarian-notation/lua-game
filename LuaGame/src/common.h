@@ -4,6 +4,7 @@
 #include "gl_headers.h"
 
 #include <stdexcept>
+#include <memory>
 
 #ifdef _DEBUG
 #include <intrin.h>
@@ -23,4 +24,6 @@ bool _trace(char *format, ...);
 #define _log __noop
 #endif
 
-#include "reference_counted.h"
+
+#define mesh_ptr std::shared_ptr<luagame::mesh_object>
+#define meshptr mesh_ptr

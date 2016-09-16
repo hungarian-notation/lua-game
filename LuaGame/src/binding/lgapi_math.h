@@ -1,6 +1,6 @@
 #pragma once
 
-#include "binding.h"
+#include "lgapi_core.h"
 #include "..\graphics\graphics_math.h"
 
 #define LUAGAME_VECTOR "luagame_vector"
