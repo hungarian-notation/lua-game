@@ -1,6 +1,6 @@
 #include "lgmodule.h"
 #include "lgapi_gfx.h"
-#include "..\graphics\window_context.h"
+#include "..\window_context.h"
 
 using namespace luagame;
 
@@ -14,6 +14,8 @@ namespace {
 
 	int get_should_close(lua_State * L);
 	int set_should_close(lua_State * L);
+
+
 	int close(lua_State * L);
 }
 
@@ -29,6 +31,7 @@ void lgload_window(lua_State * L) {
 
 		{ "get_should_close",	&get_should_close },
 		{ "set_should_close",	&set_should_close },
+
 		{ "close",				&close },
 		{ NULL, NULL }
 	};

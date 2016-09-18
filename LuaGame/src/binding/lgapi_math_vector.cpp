@@ -38,12 +38,18 @@ namespace {
 	int crossproduct(lua_State * L);
 	int dotproduct(lua_State * L);
 
+	int project(lua_State * L);
+	int get_projected(lua_State * L);
+	int unproject(lua_State * L);
+	int get_unprojected(lua_State * L);
+
 	// projective (vec4) operations
 
 	int truncate(lua_State * L);
 	int get_truncated(lua_State * L);
 	int homogenize(lua_State * L);
 	int get_homogenized(lua_State * L);
+
 }
 
 void luagame_pushvector(lua_State * L, glm::vec4 vector) {
@@ -73,6 +79,11 @@ void luagame_pushvector(lua_State * L, glm::vec4 vector) {
 			{ "cross",					&crossproduct },
 			{ "dot",					&dotproduct },
 
+			{ "project",				&project },
+			{ "get_projected",			&get_projected },
+			{ "unproject",				&unproject },
+			{ "get_unprojected",		&get_unprojected },
+
 			{ "truncate",				&truncate },
 			{ "get_truncated",			&get_truncated },
 			{ "homogenize",				&homogenize },
@@ -83,6 +94,8 @@ void luagame_pushvector(lua_State * L, glm::vec4 vector) {
 
 		luaL_setfuncs(L, functions, NULL);
 	}
+
+	// std::cout << "new vector: " << *udata << std::endl;
 
 	lua_setmetatable(L, -2);
 }
@@ -179,9 +192,16 @@ glm::vec4 * luagame_tovector(lua_State * L, int idx) {
 namespace {
 	template <int components, class vtype>
 	vtype to_value(lua_State * L, int idx) {
-		if (luagame_isvector(L, idx))
+		if (luagame_isvector(L, idx)) {
+
+			//_log("direct cast");
+
 			return vtype(*luagame_tovector(L, idx));
-		else if (lua_istable(L, idx)) {
+
+		} else if (lua_istable(L, idx)) {
+
+			//_log("tabular cast");
+
 			vtype value;
 
 			for (int i = 0; i < components; i++) {
@@ -440,19 +460,123 @@ namespace {
 		return 1;
 	}
 
+	glm::ivec4 get_viewport(lua_State * L) {
+		return luagame_getwindow(L)->get_viewport();
+	}
+
+	static inline void collect_projectargs(lua_State * L, glm::vec3 * vector, glm::mat4 * modelview, glm::mat4 * projection, glm::vec4 * viewport) {
+		*vector = luagame_tovec3(L, 1);
+
+		switch (lua_gettop(L)) {
+		case 3:
+
+			// vector, modelview, projection
+
+			*modelview = luagame_tomat4(L, 2);
+			*projection = luagame_tomat4(L, 3);
+			*viewport = luagame_getwindow(L)->get_viewport();
+
+			break;
+
+		case 4:
+
+			// A: vector, model, view, projection
+			// B: vector, modelview, projection, viewport
+
+			if (luagame_ismatrix(L, 4)) {
+				// A: vector, model, view, projection
+
+				*modelview = luagame_tomat4(L, 3) * luagame_tomat4(L, 2);
+				*projection = luagame_tomat4(L, 4);
+				*viewport = luagame_getwindow(L)->get_viewport();
+
+			} else {
+				// B: vector, modelview, projection, viewport
+
+				*modelview = luagame_tomat4(L, 2);
+				*projection = luagame_tomat4(L, 3);
+				*viewport = luagame_tovec4(L, 4);
+
+			}
+
+			break;
+
+		case 5:
+
+			// vector, model, view, projection, viewport
+
+			*modelview = luagame_tomat4(L, 3) * luagame_tomat4(L, 2);
+			*projection = luagame_tomat4(L, 4);
+			*viewport = luagame_tovec4(L, 5);
+
+			break;
+
+		default:
+
+			luaL_error(L, "invalid number of arguments");
+		}
+
+		//std::cout << "(un)project args:" << std::endl;
+		//std::cout << "vector: " << *vector << std::endl;
+		//std::cout << "modelview: " << *modelview << std::endl;
+		//std::cout << "projection: " << *projection << std::endl;
+		//std::cout << "viewport: " << *viewport << std::endl;
+	}
+
+	static glm::vec4 do_project(lua_State * L) {
+		glm::vec3 object_vector;
+		glm::mat4 modelview;
+		glm::mat4 projection;
+		glm::vec4 viewport;
+		collect_projectargs(L, &object_vector, &modelview, &projection, &viewport);
+		return glm::vec4(glm::project(object_vector, modelview, projection, viewport), LG_DEFAULT_VCOMP);
+	}
+
+	static glm::vec4 do_unproject(lua_State * L) {
+		glm::vec3 window_vector;
+		glm::mat4 modelview;
+		glm::mat4 projection;
+		glm::vec4 viewport;
+		collect_projectargs(L, &window_vector, &modelview, &projection, &viewport);
+		return glm::vec4(glm::unProject(window_vector, modelview, projection, viewport), LG_DEFAULT_VCOMP);
+	}
+
+	int project(lua_State * L) {
+		(*(luagame_tovector(L, 1))) = do_project(L);
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int get_projected(lua_State * L) {
+		luagame_pushvector(L, do_project(L));
+		return 1;
+	}
+
+	int unproject(lua_State * L) {
+		(*(luagame_tovector(L, 1))) = do_unproject(L);
+		lua_settop(L, 1);
+		return 1;
+	}
+
+	int get_unprojected(lua_State * L) {
+		luagame_pushvector(L, do_unproject(L));
+		return 1;
+	}
+
+	glm::vec4 do_truncate(glm::vec4 initial, float w) {
+		initial.w = w;
+		return initial;
+	}
+
 	int truncate(lua_State * L) {
 		glm::vec4 * vector = luagame_tovector(L, 1);
-		float w = (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP);
-		vector->w = w;
+		*vector = do_truncate(*vector, (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP));
 		lua_settop(L, 1);
 		return 1;
 	}
 
 	int get_truncated(lua_State * L) {
-		glm::vec4 value = luagame_tovec4(L, 1);
-		float w = (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP);
-		value.w = w;
-		luagame_pushvector(L, value);
+		luagame_pushvector(L, do_truncate(*luagame_tovector(L, 1), (float)luaL_optnumber(L, 2, LG_DEFAULT_VCOMP)));
 		return 1;
 	}
 

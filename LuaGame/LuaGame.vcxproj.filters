@@ -18,9 +18,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\any_key.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,12 +34,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\soil\stb_image_aug.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\binding\lgapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\window_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\binding\lgapi_math_matrix.cpp">
@@ -75,11 +66,17 @@
     <ClCompile Include="src\binding\lgmodule_keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\window_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\luagame_runtime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\lgmodule_mouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\util\any_key.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\conf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -119,9 +116,6 @@
     <ClInclude Include="src\binding\lgapi_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\window_context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\binding\lgapi_gfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -143,7 +137,10 @@
     <ClInclude Include="src\binding\lgmodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\binding\lgmodule_mouse.cpp">
+    <ClInclude Include="src\window_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binding\lgapi_keydefs.gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -152,6 +149,8 @@
     <None Include="vertex.glsl" />
     <None Include="fragment.glsl" />
     <None Include="binding\init.lua" />
+    <None Include="C:\Users\Admin\Desktop\scratch\test.py" />
+    <None Include="scripts\generate_keydefs.py" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img_test.png">

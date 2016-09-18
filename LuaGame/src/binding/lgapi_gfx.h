@@ -4,7 +4,7 @@
 
 #include "..\graphics\graphics_math.h"
 
-#include "..\graphics\window_context.h"
+#include "..\window_context.h"
 #include "..\graphics\texture_object.h"
 #include "..\graphics\vertex.h"
 #include "..\graphics\material_object.h"

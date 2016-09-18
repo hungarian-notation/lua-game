@@ -27,6 +27,10 @@ void lgload_luagame(lua_State * L) {
 	{
 		lua_newtable(L); // -- luagame
 		lgload_window(L);
+
+		lgload_mouse(L);
+		lgload_keyboard(L);
+
 		include_math(L);
 		include_graphics(L);
 	}

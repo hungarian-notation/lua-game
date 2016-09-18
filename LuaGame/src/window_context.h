@@ -1,16 +1,24 @@
 #pragma once
 
-#include "../common.h"
-#include "../graphics/graphics_math.h"
-#include "texture_object.h"
+#include "common.h"
+#include "graphics/graphics_math.h"
+
+#include <map>
 
 namespace luagame {
+
+
 	class window_context {
+
 	public:
 
 		window_context(int width = 800, int height = 600, std::string title = "luagame");
 
 		virtual ~window_context();
+
+	public:
+
+		enum cursor_mode { normal_cursor, hidden_cursor, captured_cursor };
 
 	public:
 
@@ -36,14 +44,27 @@ namespace luagame {
 
 		void set_title(const std::string new_title);
 
+		void set_cursor_mode(cursor_mode mode);
+
 		bool get_should_close();
 
 		void set_should_close(bool should_close);
 
+		void reset_viewport();
+
+		glm::ivec4 get_viewport();
+
+		void set_viewport(glm::ivec4 viewport);
+
+		GLFWwindow * as_glfw() { return glfw_window; }
+
 	private:
 
 		GLFWwindow *	glfw_window;
+
 		std::string		title;
+
+		glm::ivec4		viewport;
 
 	};
 }
