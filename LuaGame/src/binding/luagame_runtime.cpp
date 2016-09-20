@@ -96,12 +96,27 @@ namespace {
 	int print_error(lua_State * L);
 }
 
-int luagame_execute() {
+int luagame_execute(std::string game_path) {
 	lua_State * L = luaL_newstate();
 
 	luaL_openlibs(L);
 
 	lua_pushglobaltable(L);
+
+	int clean_idx = lua_gettop(L);
+
+	lua_getfield(L, -1, "package");
+	lua_getfield(L, -1, "path");
+
+	std::string existing = lua_tostring(L, -1);
+
+	auto new_path = game_path + "?.lua;" + existing  ;
+
+	lua_pop(L, 1);
+	lua_pushstring(L, new_path.c_str());
+	lua_setfield(L, -2, "path");
+
+	lua_settop(L, clean_idx);
 
 	lgload_luagame(L);
 
@@ -116,8 +131,10 @@ int luagame_execute() {
 
 	lua_pop(L, 2);
 
-	if (luaL_loadfile(L, "binding\\init.lua") != LUA_OK)
-		return print_error(L);
+	// if (luaL_loadfile(L, "binding\\init.lua") != LUA_OK)
+	// 	return print_error(L);
+
+	luaL_loadstring(L, "require \"main\"");
 
 	if (lua_pcall(L, 0, 0, 0) != LUA_OK)
 		return print_error(L);

@@ -24,10 +24,7 @@ function luagame.load ()
 
 	local a, b, c, d
 
-	a = {
-		pos = {-1, -1, 0},
-		tex = {0, 0}
-	}
+	a = { pos = {-1, -1, 0}, tex = {0, 0} }
 
 	b = {
 		pos = {1, -1, 0},

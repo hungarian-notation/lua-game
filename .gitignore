@@ -29,3 +29,7 @@ _ReSharper*/
 *.VC.db
 *.VC.opendb
 .vc/
+
+# Ignore junction to boost 1.61.0
+
+/LuaGame/include/boost

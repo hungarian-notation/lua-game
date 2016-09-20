@@ -148,9 +148,8 @@
     <None Include="architecture.md" />
     <None Include="vertex.glsl" />
     <None Include="fragment.glsl" />
-    <None Include="binding\init.lua" />
-    <None Include="C:\Users\Admin\Desktop\scratch\test.py" />
     <None Include="scripts\generate_keydefs.py" />
+    <None Include="example_game\main.lua" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img_test.png">

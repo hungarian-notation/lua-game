@@ -26,6 +26,7 @@
 #include "../graphics/material_object.h"
 #include "../window_context.h"
 
+
 struct luagame_context {
 	luagame::shared_cache<const char *, luagame::texture_object>						texture_cache;
 	luagame::shared_cache<luagame::material_object::options, luagame::material_object>	material_cache;

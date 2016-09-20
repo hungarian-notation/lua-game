@@ -96,6 +96,7 @@
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries> /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBCMT"</IgnoreSpecificDefaultLibraries>
+      <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,6 +120,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries> /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBCMT"</IgnoreSpecificDefaultLibraries>
+      <SubSystem>NotSet</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -184,10 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="architecture.md" />
-    <None Include="binding\init.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="C:\Users\Admin\Desktop\scratch\test.py" />
+    <None Include="example_game\main.lua" />
     <None Include="fragment.glsl">
       <DeploymentContent>true</DeploymentContent>
     </None>

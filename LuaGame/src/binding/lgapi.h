@@ -4,4 +4,4 @@
 #include "lgapi_math.h"
 #include "lgapi_gfx.h"
 
-int luagame_execute();
+int luagame_execute(std::string game_path);
