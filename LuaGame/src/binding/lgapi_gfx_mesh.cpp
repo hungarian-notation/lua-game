@@ -101,9 +101,9 @@ namespace {
 
 		glm::mat4 model = luagame_tomat4(L, 2);
 		glm::mat4 view = luagame_tomat4(L, 3);
-		glm::mat4 proj = luagame_tomat4(L, 4);
+		glm::mat4 projection = luagame_tomat4(L, 4);
 
-		mesh->draw(model, view, proj);
+		mesh->draw(model, view, projection);
 
 		return 0;
 	}

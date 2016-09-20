@@ -6,7 +6,7 @@ function srnd ( mag )
 	return math.random() * mag - mag / 2
 end
 
-local axis_of_rotation = luagame.vector(srnd(2), srnd(2), srnd(2)):normalize()
+local axis_of_rotation = luagame.vector(1, 0, 0):normalize()
 
 luagame.window.set_title("This is the new title!")
 
@@ -18,32 +18,32 @@ function luagame.load ()
 
 	transform.view:set_identity()
 
-	mesh = luagame.create_mesh { use_texture = true, use_transparency = true }
+	mesh = luagame.create_mesh {
+		use_texcoord = true, 
+		use_normal = true,
+
+		transparency = true
+	}
 
 	mesh:set_texture("img_test.png")
 
 	local a, b, c, d
 
-	a = { pos = {-1, -1, 0}, tex = {0, 0} }
+	a = { vertex = {-1, -1, 0},	texcoord = {0, 0}, normal = {0, 0, 1} }
+	b = { vertex = {1, -1, 0},	texcoord = {1, 0}, normal = {0, 0, 1} }
+	c = { vertex = {1, 1, 0},	texcoord = {1, 1}, normal = {0, 0, 1} }
+	d = { vertex = {-1, 1, 0},	texcoord = {0, 1}, normal = {0, 0, 1} }
 
-	b = {
-		pos = {1, -1, 0},
-		tex = {1, 0}
-	}
-
-	c = {
-		pos = {1, 1, 0},
-		tex = {1, 1}
-	}
-
-	d = {
-		pos = {-1, 1, 0},
-		tex = {0, 1}
-	}
+	local function reverse(vertex) 
+		return {vertex = vertex.vertex, color = vertex.color, texcoord = vertex.texcoord, normal = luagame.vector(vertex.normal) * -1};
+	end
 
 	mesh:append {
 		a, b, c,
-		c, d, a
+		c, d, a,
+
+		reverse(a), reverse(d), reverse(c),
+		reverse(c), reverse(b), reverse(a)
 	}
 
 	instances = {}

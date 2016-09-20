@@ -17,18 +17,18 @@ int lgapi_create_texture(lua_State * L);
 // MESH
 
 #define LUAGAME_MTLOPT_COLOR		"use_color"
-#define LUAGAME_MTLOPT_NORMALS		"use_normals"
-#define LUAGAME_MTLOPT_TEXTURE		"use_texture"
-#define LUAGAME_MTLOPT_TRANSPARENCY "use_transparency"
+#define LUAGAME_MTLOPT_NORMALS		"use_normal"
+#define LUAGAME_MTLOPT_TEXTURE		"use_texcoord"
+#define LUAGAME_MTLOPT_TRANSPARENCY "transparency"
 
 int lgapi_create_mesh(lua_State * L);
 
 // VERTEX HANDLING
 
-#define LUAGAME_VERTEX_POSITION		"pos"
-#define LUAGAME_VERTEX_COLOR		"clr"
-#define LUAGAME_VERTEX_NORMAL		"nml"
-#define LUAGAM_VERTEX_TEXCOORD		"tex"
+#define LUAGAME_VERTEX_POSITION		"vertex"
+#define LUAGAME_VERTEX_COLOR		"color"
+#define LUAGAME_VERTEX_NORMAL		"normal"
+#define LUAGAM_VERTEX_TEXCOORD		"texcoord"
 
 int luagame_isvertex(lua_State * L, int idx);
 luagame::vertex luagame_checkvertex(lua_State * L, int idx);

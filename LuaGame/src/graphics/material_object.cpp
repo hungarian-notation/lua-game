@@ -143,6 +143,8 @@ luagame::material_object::material_object(const material_object::options & mtlop
 	targets.model_uni = glGetUniformLocation(gl_program, "u_Model");
 	targets.view_uni = glGetUniformLocation(gl_program, "u_View");
 	targets.proj_uni = glGetUniformLocation(gl_program, "u_Proj");
+
+	targets.invtrans_uni = glGetUniformLocation(gl_program, "u_InvTrans");
 }
 
 luagame::material_object::~material_object() {

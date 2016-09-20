@@ -8,11 +8,13 @@
 #include "texture_object.h"
 #include "material_object.h"
 #include "vertex.h"
+#include "environment_object.h"
 
 #include <vector>
 
 namespace luagame {
 	class mesh_object {
+
 	public:
 
 		mesh_object();
@@ -44,8 +46,8 @@ namespace luagame {
 		void bind();
 
 		size_t size();
-
-		void draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix);
+		
+		void draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix, luagame::environment_object environment = luagame::environment_object());
 
 	private:
 

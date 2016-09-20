@@ -2,12 +2,14 @@
 
 #include "vertex.h"
 
+#include <glm/gtc/matrix_inverse.hpp>
+
 using namespace luagame;
 
 luagame::mesh_object::mesh_object() :
-	gl_buffer	(NULL),
-	dirty		(false),
-	vertices	() {}
+	gl_buffer(NULL),
+	dirty(false),
+	vertices() {}
 
 luagame::mesh_object::~mesh_object() {
 	set_material(nullptr);
@@ -88,7 +90,7 @@ void luagame::mesh_object::bind() {
 		GLint texcoord_attr = material->get_targets().texcoord_attr;
 
 		material_object::options mtlopts = material->opts();
-		
+
 		if (mtlopts.use_position) {
 			glEnableVertexAttribArray(position_attr);
 			glVertexAttribPointer(position_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(0 * sizeof(glm::vec3)));
@@ -115,7 +117,9 @@ void luagame::mesh_object::bind() {
 
 size_t luagame::mesh_object::size() { return vertices.size(); }
 
-void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix) {
+void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix, luagame::environment_object environment) {
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	material->bind();
 
@@ -124,6 +128,11 @@ void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, g
 	glUniformMatrix4fv(targets.model_uni, 1, GL_FALSE, (GLfloat *)(&model_matrix));
 	glUniformMatrix4fv(targets.view_uni, 1, GL_FALSE, (GLfloat *)(&view_matrix));
 	glUniformMatrix4fv(targets.proj_uni, 1, GL_FALSE, (GLfloat *)(&projection_matrix));
+
+	if (targets.invtrans_uni != -1) {
+		glm::mat4 invtrans_matrix = glm::inverseTranspose(view_matrix * model_matrix);
+		glUniformMatrix4fv(targets.invtrans_uni, 1, GL_FALSE, (GLfloat *)(&invtrans_matrix));
+	}
 
 	this->bind();
 
