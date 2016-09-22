@@ -173,27 +173,28 @@
     <ClInclude Include="src\binding\lgapi_aux.gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\res\fragment_glsl.res.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\res\vertex_glsl.res.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="architecture.md" />
-    <None Include="vertex.glsl" />
-    <None Include="fragment.glsl" />
     <None Include="scripts\generate_keydefs.py" />
-    <None Include="txt1.bin">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="scripts\build.py" />
     <None Include="scripts\auxiliaries.py" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="img_test.png">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <None Include="buildscripts\include_file.py" />
+    <None Include="buildscripts\auxiliaries.py" />
+    <None Include="buildscripts\build.py" />
+    <None Include="buildscripts\generate_keydefs.py" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="doc\api.xml" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="auxlib\init.lua" />
+    <CustomBuild Include="shaders\vertex.glsl" />
+    <CustomBuild Include="shaders\fragment.glsl" />
   </ItemGroup>
 </Project>

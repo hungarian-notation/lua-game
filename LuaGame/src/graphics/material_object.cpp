@@ -1,8 +1,9 @@
 #include "material_object.h"
 
-#include <fstream>
-#include <iostream>
 #include <sstream>
+
+#include "../res/fragment_glsl.res.h"
+#include "../res/vertex_glsl.res.h"
 
 // When defined, this macro causes new materials to dump the source of their shader to console
 // immediately before linking.
@@ -12,16 +13,17 @@ using namespace std;
 using namespace luagame;
 
 namespace {
-string load_shader(const string filename, const string preamble) {
+string load_shader(const string source, const string preamble) {
 	stringstream buffer;
 
 	buffer << preamble;
-	buffer << ifstream(filename).rdbuf();
+	buffer << endl;
+	buffer << source;
 
 	return buffer.str();
 }
 
-GLuint create_shader(GLuint mode, const std::string file, const std::string &source) {
+GLuint create_shader(GLuint mode, const std::string name, const std::string &source) {
 	GLuint shader_id = glCreateShader(mode);
 
 	const char * const c_str_source = source.c_str();
@@ -38,7 +40,7 @@ GLuint create_shader(GLuint mode, const std::string file, const std::string &sou
 		int chars_written;
 		glGetShaderInfoLog(shader_id, log_length, &chars_written, info_log);
 		if (chars_written > 0)
-			_log("in %s: %s\n", file.c_str(), info_log);
+			_log("in %s: %s\n", name.c_str(), info_log);
 		delete[] info_log;
 	}
 
@@ -86,9 +88,9 @@ bool luagame::operator<(const material_object::material_options & x, const mater
 string luagame::get_shader(const GLenum &type, const material_object::material_options &options) {
 	switch (type) {
 	case GL_VERTEX_SHADER:
-		return load_shader("vertex.glsl", generate_preamble(options));
+		return load_shader(luagame::resources::vertex_glsl, generate_preamble(options));
 	case GL_FRAGMENT_SHADER:
-		return load_shader("fragment.glsl", generate_preamble(options));
+		return load_shader(luagame::resources::fragment_glsl, generate_preamble(options));
 	default:
 		_log("invalid shader type GLenum: %d", type);
 		_err("invalid shader type");
@@ -161,8 +163,6 @@ luagame::material_object::material_object(const material_object::material_option
 	targets.lightpos_uni = glGetUniformLocation(gl_program, "u_LightPos");
 	targets.lightcolor_uni = glGetUniformLocation(gl_program, "u_LightColor");
 	targets.ambientlight_uni = glGetUniformLocation(gl_program, "u_AmbientLight");
-
-	_log("ambient light is at %d", targets.ambientlight_uni);
 }
 
 luagame::material_object::~material_object() {
