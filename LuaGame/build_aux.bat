@@ -1,0 +1,1 @@
+Z:/libs/cpp/lua/lua-5.3.3/bin/luac.exe -o "auxiliaries\aux.out" ./auxiliaries/entry.lua

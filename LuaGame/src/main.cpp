@@ -11,8 +11,13 @@ static void hide_console() { FreeConsole(); }
 static void hide_console() { /* noop */ }
 #endif
 
+#include "filesystem.h"
+
+using namespace luagame;
+
 int main(int argc, char * argv[]) {
 	std::set<std::string> flags;
+
 	std::string game_path = ".";
 
 	for (int i = 1; i < argc; i++) {
@@ -33,15 +38,15 @@ int main(int argc, char * argv[]) {
 	if (flags.count("help")) {
 		std::cout << "luagame [ -help | -console ] <game_path>" << std::endl;
 		system("pause");
-	} else {
-
+	} else {		
 		if (!(flags.count("console") || force_console))
 			hide_console();
-
-		std::cout << "running game from: " << game_path << std::endl;
-
+		
 		int result = 0;
+		
+		filesystem::set_game_path(game_path);
 		result = luagame_execute(game_path);
+
 #ifdef _DEBUG
 		system("pause");
 		#endif

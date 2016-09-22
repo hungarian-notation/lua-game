@@ -1,12 +1,14 @@
 #include "lgapi_gfx.h"
 #include "lgapi_math.h"
+#include "..\graphics\mesh_batch.h"
 
 using namespace luagame;
+using namespace glm;
 
 namespace {
-	int set_texture(lua_State * L);
-	int append(lua_State * L);
-	int draw(lua_State * L);
+int set_texture(lua_State * L);
+int append(lua_State * L);
+int draw(lua_State * L);
 }
 
 void luagame_pushmesh(lua_State * L, meshptr mesh) {
@@ -22,31 +24,37 @@ void luagame_pushmesh(lua_State * L, meshptr mesh) {
 }
 
 int lgapi_create_mesh(lua_State * L) {
-	material_object::options opts = luagame_tomaterialoptions(L, 1);
-	auto mesh = std::make_shared<luagame::mesh_object>();
-	mesh->set_material(opts, luagame_getcontext(L)->material_cache);
+	material_object::material_options opts = luagame_tomaterialoptions(L, 1);
+
+	auto mesh = std::make_shared<luagame::mesh_object>(&(luagame_getcontext(L)->material_cache), &(luagame_getcontext(L)->texture_cache));
+	
+	mesh->set_material(opts);
+
 	luagame_pushmesh(L, mesh);
 
 	return 1;
 }
 
-material_object::options luagame_tomaterialoptions(lua_State * L, int idx) {
-	material_object::options opts = {};
-
-	opts.use_position = true;
+material_object::material_options luagame_tomaterialoptions(lua_State * L, int idx) {
+	material_object::material_options opts = {};
 
 	if (lua_istable(L, idx)) {
-		lua_getfield(L, idx, LUAGAME_MTLOPT_COLOR);
+		lua_getfield(L, idx, "use_color");
 		opts.use_color = lua_toboolean(L, -1);
 
-		lua_getfield(L, idx, LUAGAME_MTLOPT_TEXTURE);
+		lua_getfield(L, idx, "use_texture");
 		opts.use_texture = lua_toboolean(L, -1);
 
-		lua_getfield(L, idx, LUAGAME_MTLOPT_NORMALS);
+		lua_getfield(L, idx, "use_normals");
 		opts.use_normal = lua_toboolean(L, -1);
 
-		lua_getfield(L, idx, LUAGAME_MTLOPT_TRANSPARENCY);
+		lua_getfield(L, idx, "use_transparency");
 		opts.use_transparency = lua_toboolean(L, -1);
+
+		lua_getfield(L, idx, "use_lighting");
+		opts.use_lighting = lua_toboolean(L, -1);
+
+		if (opts.use_lighting) opts.max_lights = 6;
 
 		lua_pop(L, 4);
 	}
@@ -55,56 +63,61 @@ material_object::options luagame_tomaterialoptions(lua_State * L, int idx) {
 }
 
 namespace {
-	int set_texture(lua_State * L) {
-		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
+int set_texture(lua_State * L) {
+	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
-		if (lua_isstring(L, 2)) {
-			mesh->set_texture(lua_tostring(L, 2), luagame_getcontext(L)->texture_cache);
-		} else if (luagame_isobj<texture_object>(L, 2)) {
-			mesh->set_texture(luagame_checkobj<texture_object>(L, 2));
-		} else {
-			luaL_argerror(L, 2, "expected filename or texture object");
-		}
-
-		return 0;
+	if (lua_isstring(L, 2)) {
+		mesh->set_texture(lua_tostring(L, 2));
+	} else if (luagame_isobj<texture_object>(L, 2)) {
+		mesh->set_texture(luagame_checkobj<texture_object>(L, 2));
+	} else {
+		luaL_argerror(L, 2, "expected filename or texture object");
 	}
 
-	int append(lua_State * L) {
-		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
+	return 0;
+}
 
-		luaL_checktype(L, 2, LUA_TTABLE);
+int append(lua_State * L) {
+	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
-		lua_len(L, 2);
-		int length = (int)lua_tointeger(L, -1);
+	luaL_checktype(L, 2, LUA_TTABLE);
 
-		_log("appending %d vertices", length);
+	lua_len(L, 2);
+	int length = (int)lua_tointeger(L, -1);
 
-		vertex * vertices = new vertex[length];
+	vertex * vertices = new vertex[length];
 
-		for (int i = 0; i < length; i++) {
-			lua_geti(L, 2, i + 1);
-			vertices[i] = luagame_checkvertex(L, -1);
-			lua_pop(L, 1);
-		}
-
-		mesh->append(vertices, length);
-
-		_log("finished appending", length);
-
-		delete[] vertices;
-
-		return 0;
+	for (int i = 0; i < length; i++) {
+		lua_geti(L, 2, i + 1);
+		vertices[i] = luagame_checkvertex(L, -1);
+		lua_pop(L, 1);
 	}
 
-	int draw(lua_State * L) {
-		meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
+	mesh->append(vertices, length);
 
-		glm::mat4 model = luagame_tomat4(L, 2);
-		glm::mat4 view = luagame_tomat4(L, 3);
-		glm::mat4 projection = luagame_tomat4(L, 4);
+	delete[] vertices;
 
-		mesh->draw(model, view, projection);
+	return 0;
+}
 
-		return 0;
-	}
+int draw(lua_State * L) {
+	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
+
+	mat4 model = luagame_tomat4(L, 2);
+	mat4 view = luagame_tomat4(L, 3);
+	mat4 projection = luagame_tomat4(L, 4);
+
+	auto env = environment_object(vec3(0.2F));
+
+	env.add_light(light(vec3(0, 0, 0), 30, vec3(0.8, 0.0, 0.0)));
+	env.add_light(light(vec3(1, 0, 1), vec3(0.6, 0.6, 0.6)));
+
+	mesh_batch batch;
+
+	batch.begin(env, view, projection);
+	batch.add_instance(mesh, model);
+	batch.flush();
+
+	return 0;
+}
 }

@@ -3,6 +3,8 @@
 #include "..\window_context.h"
 #include "..\shared_cache.h"
 
+#include "lgapi_aux.gen.h"
+
 #include "lgmodule.h"
 
 #include <chrono>
@@ -115,9 +117,9 @@ int luagame_execute(std::string game_path) {
 	lua_pop(L, 1);
 	lua_pushstring(L, new_path.c_str());
 	lua_setfield(L, -2, "path");
-
+	 
 	lua_settop(L, clean_idx);
-
+	 
 	lgload_luagame(L);
 
 	lua_getfield(L, -1, "window");
@@ -131,8 +133,11 @@ int luagame_execute(std::string game_path) {
 
 	lua_pop(L, 2);
 
-	// if (luaL_loadfile(L, "binding\\init.lua") != LUA_OK)
-	// 	return print_error(L);
+	if (luagame_loadauxlib(L) != LUA_OK)
+	 	return print_error(L);
+
+	if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+		return print_error(L);
 
 	luaL_loadstring(L, "require \"main\"");
 

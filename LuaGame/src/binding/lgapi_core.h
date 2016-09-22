@@ -28,8 +28,8 @@
 
 
 struct luagame_context {
-	luagame::shared_cache<const char *, luagame::texture_object>						texture_cache;
-	luagame::shared_cache<luagame::material_object::options, luagame::material_object>	material_cache;
+	luagame::texture_cache	texture_cache;
+	luagame::material_cache	material_cache;
 };
 
 std::shared_ptr<luagame_context> luagame_getcontext(lua_State * L);

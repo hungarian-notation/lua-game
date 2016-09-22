@@ -78,6 +78,18 @@
     <ClCompile Include="src\graphics\environment_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\mesh_batch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\lgapi_gfx_batch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\filesystem_msvc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\texture_object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\conf.h">
@@ -149,13 +161,29 @@
     <ClInclude Include="src\graphics\environment_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\mesh_instance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh_batch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\filesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binding\lgapi_aux.gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="architecture.md" />
     <None Include="vertex.glsl" />
     <None Include="fragment.glsl" />
     <None Include="scripts\generate_keydefs.py" />
-    <None Include="example_game\main.lua" />
+    <None Include="txt1.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="scripts\build.py" />
+    <None Include="scripts\auxiliaries.py" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="img_test.png">
@@ -164,5 +192,8 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="doc\api.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="auxlib\init.lua" />
   </ItemGroup>
 </Project>

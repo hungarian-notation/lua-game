@@ -1,18 +1,13 @@
 #pragma once
 
 #include "../common.h"
-#include "../gl_headers.h"
-
-#include <sstream>
-#include <fstream>
-#include <tuple>
+#include "../shared_cache.h"
 
 namespace luagame {
 
 class material_object {
 public:
-	struct options {
-		unsigned use_position : 1;
+	struct material_options {
 		unsigned use_color : 1;
 		unsigned use_normal : 1;
 		unsigned use_texture : 1;
@@ -32,35 +27,43 @@ public:
 			model_uni,
 			view_uni,
 			invtrans_uni,
-			proj_uni;
+			proj_uni,
 
+			lightpos_uni,
+			lightcolor_uni,
+			ambientlight_uni;
 	};
 public:
 
-	material_object(const material_object::options &mtlops);
+	material_object(const material_object::material_options &mtlops);
 
 	virtual ~material_object();
 
 public:
 
-	const material_object::options & opts() { return mtlopts; }
+	const material_object::material_options & opts() const { return options; }
 
 	void bind() const;
 
 	const program_targets & get_targets() const { return targets; }
 
+
+	const material_object::material_options		options;
+
+	GLuint id() const { return gl_program; }
+
 private:
 
-	const material_object::options		mtlopts;
-
-	GLuint						gl_program;
-	program_targets				targets;
+	GLuint										gl_program;
+	program_targets								targets;
 
 };
 
-bool operator <(const material_object::options& x, const material_object::options& y);
+bool operator <(const material_object::material_options& x, const material_object::material_options& y);
 
-std::string get_shader(const GLenum &type, const material_object::options &options);
-std::string generate_preamble(const material_object::options &options);
+std::string get_shader(const GLenum &type, const material_object::material_options &options);
+std::string generate_preamble(const material_object::material_options &options);
+
+typedef luagame::shared_cache<material_object::material_options, luagame::material_object> material_cache;
 
 }

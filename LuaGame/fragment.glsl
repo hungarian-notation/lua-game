@@ -1,5 +1,3 @@
-#define LIGHTING
-
 #ifdef USE_COLOR
 	in vec3 ex_Color;
 #endif
@@ -9,10 +7,15 @@
 	uniform sampler2D u_Texture;
 #endif
 
-#ifdef LIGHTING
+#ifdef USE_LIGHTING
+
+	uniform vec3 u_AmbientLight;
+	uniform vec4 u_LightPos[MAX_LIGHTS];
+	uniform vec3 u_LightColor[MAX_LIGHTS];
+
 	in vec3 frag_Position;
 	in vec3 frag_Normal;
-	uniform mat4 u_View;
+
 #endif
 
 out vec4 out_Color;
@@ -28,44 +31,48 @@ void main(void) {
 		color = color * texture(u_Texture, ex_TexCoord);
 	#endif
 
-	#ifdef LIGHTING
+	#ifdef USE_LIGHTING
+	
+		vec3 effective_light = u_AmbientLight;
 
-		vec3 ambient_light = vec3(0.2, 0.2, 0.2);
+		for (int li = 0; li < MAX_LIGHTS; li++) {
 
-		vec4 light_position = vec4(0.0, 0.0, 0.0, 30.0);
-		vec3 light_color = vec3(0.6, 0.6, 0.6);
+			vec4 light_position = u_LightPos[li];
+			vec3 light_color = u_LightColor[li];
 
-		vec3 to_light;
-		float falloff_factor;
+			vec3 to_light;
+			float falloff_factor;
 
-		if (light_position.w == 0.0) {
-			// DIRECTIONAL LIGHT
+			if (light_position.w == 0.0) {
+				// DIRECTIONAL LIGHT
 
-			to_light = normalize(vec3(u_View * light_position));
-			falloff_factor = 1;
-		} else {
-			// POINT LIGHT
+				to_light = normalize(vec3(light_position));
+				falloff_factor = 1;
+			} else {
+				// POINT LIGHT
 
-			to_light = vec3(u_View * vec4(light_position.xyz, 1.0)) - frag_Position;
+				to_light = light_position.xyz - frag_Position;
 
-			float radius = light_position.w;
+				float radius = light_position.w;
 
-			falloff_factor = 1 - (min(length(to_light), radius) / radius);
+				falloff_factor = 1 - (min(length(to_light), radius) / radius);
 
-			to_light = normalize(to_light);
+				to_light = normalize(to_light);
+			}
+
+			vec3 to_eye = normalize(-frag_Position);
+
+			vec3 reflection = normalize(-reflect(to_light, to_eye));
+
+			vec3 diffuse_light = light_color * max(dot(frag_Normal, to_light), 0.0) * falloff_factor;
+
+			// specular? 
+
+			effective_light = effective_light + diffuse_light;
 		}
 
-		vec3 to_eye = normalize(-frag_Position);
-
-		vec3 reflection = normalize(-reflect(to_light, to_eye));
-
-		vec3 diffuse_light = light_color * max(dot(frag_Normal, to_light), 0.0) * falloff_factor;
-
-		// specular? 
-
-		vec3 effective_light = ambient_light + diffuse_light;
-
 		color = color * vec4(effective_light, 1.0);
+
 	#endif
 
 	#ifdef USE_TRANSPARENCY

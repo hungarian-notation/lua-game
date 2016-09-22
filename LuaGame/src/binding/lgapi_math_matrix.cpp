@@ -29,6 +29,9 @@ namespace {
 	int transpose(lua_State * L);
 	int get_transposed(lua_State * L);
 
+	int get_component(lua_State * L);
+	int set_component(lua_State * L);
+
 	int det(lua_State * L);
 }
 
@@ -65,6 +68,9 @@ void luagame_pushmatrix(lua_State * L, glm::mat4 matrix) {
 			{ "get_transpose", &get_transposed },
 
 			{ "det", &det },
+
+			{ "get", &get_component },
+			{ "set", &set_component },
 
 			{ NULL, NULL }
 		};
@@ -337,6 +343,27 @@ namespace {
 	int get_transposed(lua_State * L) {
 		luagame_pushmatrix(L, glm::transpose(luagame_tomat4(L, 1)));
 		return 1;
+	}
+
+	int get_component(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
+		int col = (int)luaL_checkinteger(L, 2);
+		int row = (int)luaL_checkinteger(L, 3);
+
+		lua_pushnumber(L, (*matrix)[col - 1][row - 1]);
+
+		return 1;
+	}
+
+	int set_component(lua_State * L) {
+		glm::mat4 * matrix = luagame_tomatrix(L, 1);
+		int col = (int)luaL_checkinteger(L, 2);
+		int row = (int)luaL_checkinteger(L, 3);
+		float number = (float)luaL_checknumber(L, 4);
+
+		(*matrix)[col - 1][row - 1] = number;
+
+		return 0;
 	}
 
 	int det(lua_State * L) {

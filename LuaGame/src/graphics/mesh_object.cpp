@@ -6,7 +6,9 @@
 
 using namespace luagame;
 
-luagame::mesh_object::mesh_object() :
+luagame::mesh_object::mesh_object(luagame::material_cache * material_cache, luagame::texture_cache * texture_cache) :
+	material_cache(material_cache),
+	texture_cache(texture_cache),
 	gl_buffer(NULL),
 	dirty(false),
 	vertices() {}
@@ -47,24 +49,24 @@ void luagame::mesh_object::append(const vertex * vertex_data, int count) {
 	}
 }
 
-std::shared_ptr<luagame::texture_object> luagame::mesh_object::get_texture() {
+std::shared_ptr<luagame::texture_object> luagame::mesh_object::get_texture() const  {
 	return texture;
 }
 
-void luagame::mesh_object::set_texture(const char * filename, luagame::shared_cache<const char *, luagame::texture_object> &cache) {
-	texture = cache[filename];
+void luagame::mesh_object::set_texture(const char * filename) {
+	texture = (*texture_cache)[filename];
 }
 
 void luagame::mesh_object::set_texture(std::shared_ptr<texture_object> new_texture) {
 	texture = new_texture;
 }
 
-std::shared_ptr<material_object> luagame::mesh_object::get_material() {
+std::shared_ptr<material_object> luagame::mesh_object::get_material() const {
 	return material;
 }
 
-void luagame::mesh_object::set_material(const luagame::material_object::options & mtlopts, luagame::shared_cache<material_object::options, material_object> &cache) {
-	material = cache[mtlopts];
+void luagame::mesh_object::set_material(const luagame::material_object::material_options & mtlopts) {
+	material = (*material_cache)[mtlopts];
 }
 
 void luagame::mesh_object::set_material(std::shared_ptr<luagame::material_object> new_material) {
@@ -72,6 +74,7 @@ void luagame::mesh_object::set_material(std::shared_ptr<luagame::material_object
 }
 
 void luagame::mesh_object::bind() {
+
 	if (!gl_buffer) {
 		glGenVertexArrays(1, &gl_vertex_array);
 		glGenBuffers(1, &gl_buffer);
@@ -81,6 +84,7 @@ void luagame::mesh_object::bind() {
 	glBindVertexArray(gl_vertex_array);
 
 	if (dirty) {
+
 		glBindBuffer(GL_ARRAY_BUFFER, gl_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(luagame::vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
@@ -89,12 +93,10 @@ void luagame::mesh_object::bind() {
 		GLint normal_attr = material->get_targets().normal_attr;
 		GLint texcoord_attr = material->get_targets().texcoord_attr;
 
-		material_object::options mtlopts = material->opts();
+		material_object::material_options mtlopts = material->opts();
 
-		if (mtlopts.use_position) {
-			glEnableVertexAttribArray(position_attr);
-			glVertexAttribPointer(position_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(0 * sizeof(glm::vec3)));
-		}
+		glEnableVertexAttribArray(position_attr);
+		glVertexAttribPointer(position_attr, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)(0 * sizeof(glm::vec3)));
 
 		if (mtlopts.use_color) {
 			glEnableVertexAttribArray(color_attr);
@@ -113,15 +115,26 @@ void luagame::mesh_object::bind() {
 
 		dirty = false;
 	}
+
 }
 
 size_t luagame::mesh_object::size() { return vertices.size(); }
 
 void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, glm::mat4 projection_matrix, luagame::environment_object environment) {
+	
+
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
+	if (material->options.max_lights < environment.light_count()) {
+		material_object::material_options opts = material->options;
+		opts.max_lights = environment.light_count();
+		set_material(std::make_shared<luagame::material_object>(opts));
+	}
+
 	material->bind();
+	environment.bind(material, view_matrix);
 
 	material_object::program_targets targets = material->get_targets();
 
@@ -134,9 +147,10 @@ void luagame::mesh_object::draw(glm::mat4 model_matrix, glm::mat4 view_matrix, g
 		glUniformMatrix4fv(targets.invtrans_uni, 1, GL_FALSE, (GLfloat *)(&invtrans_matrix));
 	}
 
-	this->bind();
-
 	if (material->opts().use_texture && texture) texture->bind();
 
+	this->bind();
+
 	glDrawArrays(GL_TRIANGLES, 0, this->size());
+
 }

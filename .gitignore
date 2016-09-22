@@ -33,3 +33,4 @@ _ReSharper*/
 # Ignore junction to boost 1.61.0
 
 /LuaGame/include/boost
+__pycache__/

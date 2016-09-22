@@ -2,17 +2,11 @@ uniform mat4 u_Model;
 uniform mat4 u_View;
 uniform mat4 u_Proj;
 
-#define LIGHTING
+in vec3 attr_Position;
 
-#ifdef USE_POSITION
-	in vec3 attr_Position;
-#else
-	#error this shader requires position
-#endif
-
-#ifdef LIGHTING
+#ifdef USE_LIGHTING
 	#ifdef USE_NORMAL
-
+	
 		uniform mat4 u_InvTrans;
 
 		in vec3 attr_Normal;
@@ -49,7 +43,7 @@ void main(void) {
 		ex_TexCoord = attr_TexCoord;
 	#endif
 
-	#ifdef LIGHTING
+	#ifdef USE_LIGHTING
 		frag_Position = vec3(u_View * u_Model * coordinate);
 		frag_Normal =  normalize(vec3(u_InvTrans * vec4(attr_Normal, 0.0)));
 	#endif

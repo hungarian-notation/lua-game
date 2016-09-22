@@ -24,6 +24,5 @@ bool _trace(char *format, ...);
 #define _log __noop
 #endif
 
-
 #define mesh_ptr std::shared_ptr<luagame::mesh_object>
 #define meshptr mesh_ptr

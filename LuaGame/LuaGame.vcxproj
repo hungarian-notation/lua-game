@@ -98,6 +98,9 @@
       <IgnoreSpecificDefaultLibraries> /NODEFAULTLIB:"MSVCRT" /NODEFAULTLIB:"LIBCMT"</IgnoreSpecificDefaultLibraries>
       <SubSystem>NotSet</SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>python $(ProjectDir)buildscripts\build.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -138,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="src\binding\lgapi_gfx_batch.cpp" />
     <ClCompile Include="src\binding\lgmodule_mouse.cpp" />
     <ClCompile Include="src\binding\luagame_runtime.cpp" />
     <ClCompile Include="src\binding\lgapi_gfx_mesh.cpp" />
@@ -149,12 +153,15 @@
     <ClCompile Include="src\binding\lgmodule_window.cpp" />
     <ClCompile Include="src\binding\lgmodule_core.cpp" />
     <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\graphics\mesh_batch.cpp" />
     <ClCompile Include="src\graphics\environment_object.cpp" />
     <ClCompile Include="src\graphics\material_object.cpp" />
     <ClCompile Include="src\graphics\mesh_object.cpp">
       <FileType>CppCode</FileType>
     </ClCompile>
+    <ClCompile Include="src\graphics\texture_object.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\platform\filesystem_msvc.cpp" />
     <ClCompile Include="src\soil\image_DXT.c" />
     <ClCompile Include="src\soil\image_helper.c" />
     <ClCompile Include="src\soil\SOIL.c" />
@@ -163,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\binding\lgapi.h" />
+    <ClInclude Include="src\binding\lgapi_aux.gen.h" />
     <ClInclude Include="src\binding\lgapi_keydefs.gen.h" />
     <ClInclude Include="src\binding\lgapi_math.h" />
     <ClInclude Include="src\binding\lgapi_core.h" />
@@ -172,6 +180,9 @@
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\environment_object.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
+    <ClInclude Include="src\graphics\mesh_batch.h" />
+    <ClInclude Include="src\graphics\mesh_instance.h" />
+    <ClInclude Include="src\filesystem.h" />
     <ClInclude Include="src\shared_cache.h" />
     <ClInclude Include="src\graphics\vertex.h" />
     <ClInclude Include="src\graphics\material_object.h" />
@@ -188,11 +199,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="architecture.md" />
-    <None Include="example_game\main.lua" />
+    <CustomBuild Include="auxlib\init.lua">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </CustomBuild>
     <None Include="fragment.glsl">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="scripts\build.py" />
+    <None Include="scripts\auxiliaries.py" />
     <None Include="scripts\generate_keydefs.py" />
+    <None Include="txt1.bin" />
     <None Include="vertex.glsl">
       <DeploymentContent>true</DeploymentContent>
     </None>

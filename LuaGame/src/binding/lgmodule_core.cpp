@@ -57,6 +57,7 @@ namespace {
 	void include_graphics(lua_State * L) {
 		luagame_setfunc(L, "create_texture", &lgapi_create_texture);
 		luagame_setfunc(L, "create_mesh", &lgapi_create_mesh);
+		luagame_setfunc(L, "create_batch", &lgapi_create_batch);
 	}
 }
 
