@@ -8,13 +8,40 @@ namespace luagame {
 class material_object {
 public:
 	struct material_options {
-		unsigned use_color : 1;
-		unsigned use_normal : 1;
-		unsigned use_texture : 1;
-		unsigned use_transparency : 1;
+		unsigned use_color;
+		unsigned use_normal;
+		unsigned use_texture;
 
-		unsigned use_lighting : 1;
+		unsigned use_depthtest;
+
+		unsigned use_transparency;
+		unsigned use_alphamask;
+
+		unsigned use_lighting;
 		unsigned int max_lights;
+
+	private:
+
+		auto as_tuple() const {
+			return std::tie(
+				use_color,
+				use_normal,
+				use_texture,
+				use_depthtest,
+				use_transparency,
+				use_alphamask,
+				use_lighting,
+				max_lights
+			);
+		}
+
+	public:
+
+		bool operator<(const material_object::material_options &rmtl) const {
+			const auto &lmtl = *this;
+
+			return lmtl.as_tuple() < rmtl.as_tuple();
+		}
 	};
 
 	struct program_targets {
@@ -59,7 +86,6 @@ private:
 
 };
 
-bool operator <(const material_object::material_options& x, const material_object::material_options& y);
 
 std::string get_shader(const GLenum &type, const material_object::material_options &options);
 std::string generate_preamble(const material_object::material_options &options);

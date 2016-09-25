@@ -74,6 +74,7 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
+    <SourcePath>$(ProjectDir)src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
@@ -81,6 +82,13 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
+    <SourcePath>$(ProjectDir)src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <SourcePath>$(ProjectDir)src;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <SourcePath>$(ProjectDir)src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -142,6 +150,8 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\binding\lgapi_gfx_batch.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_font.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_material.cpp" />
     <ClCompile Include="src\binding\lgmodule_mouse.cpp" />
     <ClCompile Include="src\binding\luagame_runtime.cpp" />
     <ClCompile Include="src\binding\lgapi_gfx_mesh.cpp" />
@@ -179,6 +189,7 @@
     <ClInclude Include="src\conf.h" />
     <ClInclude Include="src\gl_headers.h" />
     <ClInclude Include="src\graphics\environment_object.h" />
+    <ClInclude Include="src\graphics\font_object.h" />
     <ClInclude Include="src\graphics\graphics_math.h" />
     <ClInclude Include="src\graphics\mesh_batch.h" />
     <ClInclude Include="src\graphics\mesh_instance.h" />
@@ -215,6 +226,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </CustomBuild>
+    <None Include="example_game\text.lua" />
     <None Include="scripts\build.py" />
     <None Include="scripts\auxiliaries.py" />
     <None Include="scripts\generate_keydefs.py" />

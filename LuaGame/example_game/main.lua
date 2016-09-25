@@ -3,6 +3,7 @@ local skybox = require "skybox"
 local mesh_batch
 
 local scene = {}
+local gui = {}
 
 local skybox_meshes
 
@@ -11,6 +12,8 @@ local player = {
 	height = 1.8,
 	angle = 0
 }
+
+local font
 
 local environment = {
 	ambient_light = { 0.2, 0.2, 0.2 },
@@ -37,11 +40,11 @@ end
 
 function dunes (opts)
 
-	local xscale = opts.xscale or 30
-	local xoff = opts.xoff or 0
-	local yscale = opts.yscale or 30
-	local yoff = opts.yoff or 0
-	local height = opts.height or 1
+	local xscale	= opts.xscale or 30
+	local xoff		= opts.xoff or 0
+	local yscale	= opts.yscale or 30
+	local yoff		= opts.yoff or 0
+	local height	= opts.height or 1
 
 	return function (x, y)
 		return math.sin(math.pi * (x - xoff) / xscale) * math.sin(math.pi * (y - yoff) / yscale) * height
@@ -65,7 +68,7 @@ function sample_height (x, y)
 	return height
 end
 
-local grid_size = 100
+local grid_size = 30
 
 local grid = { xmin = -grid_size, xmax = grid_size, ymin = -grid_size, ymax = grid_size, cell_size = 4, tex_scale = 0.1 }
 
@@ -84,13 +87,21 @@ function sample_normal (x, y)
 end
 
 function build_ground ()
-	local ground_mesh = luagame.create_mesh {
+
+	local ground_material = luagame.create_material {
 		use_texture = true,
 		use_normals = true,
-		use_lighting = true
+		use_lighting = true,
+		use_depthtest = true
 	}
+	
+	local grass_texture = luagame.create_texture("grass.jpg")
 
-	ground_mesh:set_texture("grass.jpg")
+	local ground_mesh = luagame.create_mesh()
+
+
+	ground_mesh:set_texture(grass_texture)
+	ground_mesh:set_material(ground_material)
 
 	vertices = {}
 
@@ -104,8 +115,8 @@ function build_ground ()
 			a = { vertex = {xmin, ymin, sample_height(xmin, ymin)},	texcoord = {xmin * grid.tex_scale, ymin * grid.tex_scale}, normal = sample_normal(xmin, ymin) }
 			b = { vertex = {xmax, ymin, sample_height(xmax, ymin)},	texcoord = {xmax * grid.tex_scale, ymin * grid.tex_scale}, normal = sample_normal(xmax, ymin) }
 			c = { vertex = {xmax, ymax, sample_height(xmax, ymax)},	texcoord = {xmax * grid.tex_scale, ymax * grid.tex_scale}, normal = sample_normal(xmax, ymax) }
-			d = { vertex = {xmin, ymax, sample_height(xmin, ymax)},	texcoord = {xmin * grid.tex_scale, ymax * grid.tex_scale}, normal = sample_normal(xmin, ymax) }
-			
+			d = { vertex = {xmin, ymax, sample_height(xmin, ymax)},	texcoord = {xmin * grid.tex_scale, ymax * grid.tex_scale}, normal = sample_normal(xmin, ymax) }		
+
 			vertices[#vertices + 1] = a
 			vertices[#vertices + 1] = b
 			vertices[#vertices + 1] = c
@@ -123,6 +134,7 @@ function build_ground ()
 end
 
 function luagame.load ()
+
 	transform = {
 		view		= luagame.matrix(),
 		projection	= luagame.matrix()
@@ -131,6 +143,18 @@ function luagame.load ()
 	transform.view:set_identity()
 
 	scene[#scene + 1] = { mesh=build_ground(), matrix=luagame.matrix() }
+
+	font = luagame.create_font("blocktopia.ttf", 32);
+	font = luagame.create_font("Blenda Script.otf", 32);
+
+	local text = require "text"
+
+	local message = text.create("This is a string of text that I can draw to the screen.", font);
+	local text_transform = luagame.matrix():translate(10, 300, 0);
+
+	for i, mesh in pairs(message.quads) do
+		gui[#gui + 1] = { mesh=mesh, matrix=text_transform }
+	end
 
 	skybox_meshes = skybox.create(
 		"bluecloud_ft.jpg",
@@ -196,6 +220,8 @@ function luagame.update (dt)
 	transform.view:translate(player.position.x, player.position.y, player.position.z + player.height)
 	transform.view:rotate(math.pi / 2, {1, 0, 0})
 	transform.view:rotate(player.angle, {0, 1, 0})
+
+	-- print (player.position)
 	
 	local width, height = luagame.window:get_width(), luagame.window:get_height()
 	transform.projection:set_perspective(math.pi / 3, width, height, 1.0, 450.0)
@@ -205,11 +231,7 @@ function luagame.draw ()
 	mesh_batch = mesh_batch or luagame.create_batch()
 	
 	mesh_batch:begin(transform.view:get_inverse(), transform.projection, environment)
-
-	for i, model in pairs(scene) do
-		mesh_batch:add(model.mesh, model.matrix);
-	end
-
+	
 	local skybox_transform = luagame.matrix()
 
 	skybox_transform:set(4, 1, player.position.x)
@@ -218,6 +240,27 @@ function luagame.draw ()
 
 	for i, mesh in pairs(skybox_meshes) do
 		mesh_batch:add(mesh, skybox_transform);
+	end
+
+	mesh_batch:flush()
+
+	luagame.clear "depth_buffer"
+
+	mesh_batch:begin(transform.view:get_inverse(), transform.projection, environment)
+
+	for i, model in pairs(scene) do
+		mesh_batch:add(model.mesh, model.matrix);
+	end
+
+	mesh_batch:flush()
+
+	local gui_view = luagame.matrix()
+	local gui_projection = luagame.matrix():set_ortho(0, luagame.window:get_width(), 0, luagame.window:get_height())
+
+	mesh_batch:begin(gui_view, gui_projection)
+	
+	for i, model in pairs(gui) do
+		mesh_batch:add(model.mesh, model.matrix);
 	end
 
 	mesh_batch:flush()

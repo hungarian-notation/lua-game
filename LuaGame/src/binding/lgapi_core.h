@@ -26,10 +26,13 @@
 #include "../graphics/material_object.h"
 #include "../window_context.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 struct luagame_context {
 	luagame::texture_cache	texture_cache;
 	luagame::material_cache	material_cache;
+	FT_Library freetype;
 };
 
 std::shared_ptr<luagame_context> luagame_getcontext(lua_State * L);

@@ -7,7 +7,7 @@
 
 // When defined, this macro causes new materials to dump the source of their shader to console
 // immediately before linking.
-#define DUMP_SHADER_TO_CONSOLE 
+// #define DUMP_SHADER_TO_CONSOLE 
 
 using namespace std;
 using namespace luagame;
@@ -79,12 +79,6 @@ GLuint create_program(const std::string &vert_source, const std::string &frag_so
 }
 }
 
-bool luagame::operator<(const material_object::material_options & x, const material_object::material_options & y) {
-	return
-		std::tie(x.use_color, x.use_normal, x.use_texture, x.use_transparency, x.use_lighting, x.max_lights) <
-		std::tie(y.use_color, y.use_normal, y.use_texture, y.use_transparency, y.use_lighting, y.max_lights);
-}
-
 string luagame::get_shader(const GLenum &type, const material_object::material_options &options) {
 	switch (type) {
 	case GL_VERTEX_SHADER:
@@ -99,26 +93,36 @@ string luagame::get_shader(const GLenum &type, const material_object::material_o
 }
 
 string luagame::generate_preamble(const material_object::material_options &options) {
+	material_object::material_options effective_options(options);
+
+	if (effective_options.use_alphamask) {
+		effective_options.use_color = true;
+		effective_options.use_texture = true;
+		effective_options.use_transparency = true;
+	}
+
 	stringstream buf;
 
 	buf << "#version 330" << endl;
 
 	// -- Vertex Components
 
-
-	if (options.use_color)
+	if (effective_options.use_color)
 		buf << "#define USE_COLOR" << endl;
-	if (options.use_normal)
+	if (effective_options.use_normal)
 		buf << "#define USE_NORMAL" << endl;
-	if (options.use_texture)
+	if (effective_options.use_texture)
 		buf << "#define USE_TEXTURE" << endl;
 
 	// -- Behaviors
 
-	if (options.use_transparency)
+	if (effective_options.use_transparency)
 		buf << "#define USE_TRANSPARENCY" << endl;
 
-	if (options.use_lighting) {
+	if (effective_options.use_alphamask)
+		buf << "#define USE_ALPHAMASK" << endl;
+
+	if (effective_options.use_lighting) {
 		buf << "#define USE_LIGHTING" << endl;
 		buf << "#define MAX_LIGHTS " << options.max_lights << endl;
 	}

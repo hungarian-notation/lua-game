@@ -7,6 +7,16 @@
 	uniform sampler2D u_Texture;
 #endif
 
+#ifdef USE_ALPHAMASK
+	#ifndef USE_TEXTURE
+		#error USE_ALPHAMASK depends on USE_TEXTURE
+	#endif
+
+	#ifndef USE_COLOR
+		#error USE_ALPHAMASK depends on USE_COLOR
+	#endif
+#endif
+
 #ifdef USE_LIGHTING
 
 	uniform vec3 u_AmbientLight;
@@ -23,12 +33,20 @@ out vec4 out_Color;
 void main(void) {
 	vec4 color = vec4(1, 1, 1, 1);
 	
-	#ifdef USE_COLOR
-		color = color * vec4(ex_Color, 1);
-	#endif
+	#ifdef USE_ALPHAMASK
 
-	#ifdef USE_TEXTURE
-		color = color * texture(u_Texture, ex_TexCoord);
+		color = vec4(ex_Color, texture(u_Texture, ex_TexCoord).r);
+
+	#else
+
+		#ifdef USE_COLOR
+			color = color * vec4(ex_Color, 1);
+		#endif
+
+		#ifdef USE_TEXTURE
+			color = color * texture(u_Texture, ex_TexCoord);
+		#endif
+
 	#endif
 
 	#ifdef USE_LIGHTING

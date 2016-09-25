@@ -24,10 +24,6 @@ namespace luagame {
 
 		void poll_events();
 
-		void clear() {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		}
-
 		glm::ivec2 get_size() {
 			glm::ivec2 window_size;
 			glfwGetFramebufferSize(glfw_window, &window_size.x, &window_size.y);

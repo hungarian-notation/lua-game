@@ -6,7 +6,7 @@ using namespace luagame;
 // This is horrible. This function should be taken out back and shot. This is a terrible violation of this framework's design... but it works for now.
 // The truth of the matter is that this framework is always going to have static state. There's nothing we can do to avoid that.
 
-// All these callbacks be sent to a (thread-local?) handler that maps GLFWwindow pointers to weak_ptr<window_context>, but that handler
+// All these callbacks could be sent to a (thread-local?) handler that maps GLFWwindow pointers to weak_ptr<window_context>, but that handler
 // would only ever have one GLFWwindow and one window_context for my use-case.
 
 // This is a global-state framework with a thin veneer of OOP. 
@@ -27,6 +27,7 @@ luagame::window_context::window_context(int width, int height, std::string title
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, LG_OPENGL_VERSION_MAJOR);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, LG_OPENGL_VERSION_MINOR);
 		glfwWindowHint(GLFW_FOCUSED, true);
+		glfwWindowHint(GLFW_SAMPLES, 4);
 
 		// glfwWindowHint(GLFW_RESIZABLE, false);
 
@@ -46,9 +47,9 @@ luagame::window_context::window_context(int width, int height, std::string title
 			glfwTerminate();
 		}
 
+		glEnable(GL_MULTISAMPLE);
 		reset_viewport();
 
-		glEnable(GL_DEPTH_TEST);
 
 		_log("initialized glfw context");
 	}

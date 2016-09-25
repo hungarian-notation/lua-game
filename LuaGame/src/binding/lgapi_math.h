@@ -36,12 +36,9 @@ glm::vec2 luagame_tovec2(lua_State * L, int idx);
 // create_vector ( vector_like )
 int lgapi_create_vector(lua_State * L);
 
-
-
-
 #define LUAGAME_MATRIX "luagame_matrix"
 
-	// Pushes a matrix onto the stack.
+// Pushes a matrix onto the stack.
 void luagame_pushmatrix(lua_State * L, glm::mat4 matrix);
 
 // Tests if the value at idx is a matrix.

@@ -90,6 +90,12 @@
     <ClCompile Include="src\graphics\texture_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\binding\lgapi_gfx_font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\binding\lgapi_gfx_material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\conf.h">
@@ -179,6 +185,9 @@
     <ClInclude Include="src\res\vertex_glsl.res.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\font_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\generate_keydefs.py" />
@@ -188,6 +197,7 @@
     <None Include="buildscripts\auxiliaries.py" />
     <None Include="buildscripts\build.py" />
     <None Include="buildscripts\generate_keydefs.py" />
+    <None Include="example_game\text.lua" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="doc\api.xml" />
