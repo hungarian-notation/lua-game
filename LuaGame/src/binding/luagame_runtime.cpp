@@ -133,6 +133,14 @@ int luagame_execute(std::string game_path) {
 
 	lua_pop(L, 2);
 
+	std::shared_ptr<luagame_context> ctx = luagame_getcontext(L);
+
+	if (FT_Init_FreeType(&ctx->freetype)) {
+		luaL_error(L, "failed to initialize freetype");
+	} else {
+		_log("initialized freetype");
+	}
+
 	if (luagame_loadauxlib(L) != LUA_OK)
 	 	return print_error(L);
 
@@ -167,9 +175,7 @@ int luagame_execute(std::string game_path) {
 
 		if (lghook_update(L, delta) != LUA_OK)
 			return print_error(L);
-
-		window->clear();
-
+		
 		if (lghook_draw(L) != LUA_OK)
 			return print_error(L);
 
@@ -180,6 +186,8 @@ int luagame_execute(std::string game_path) {
 	}
 
 	lua_close(L);
+
+	FT_Done_FreeType(ctx->freetype);
 
 	return 0;
 }

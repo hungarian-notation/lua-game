@@ -37,7 +37,7 @@ local function push_plane(models, texture, origin, exa, exb)
 	vertices[#vertices + 1] = d
 	vertices[#vertices + 1] = a
 
-	local mesh = luagame.create_mesh { use_texture = true }
+	local mesh = luagame.create_mesh { use_texture = true, use_depthtest = true }
 	mesh:set_texture(texture)
 	mesh:append(vertices)
 
@@ -45,7 +45,7 @@ local function push_plane(models, texture, origin, exa, exb)
 end
 
 function skybox.create(px_tex, nx_tex, py_tex, ny_tex, pz_tex, nz_tex, size) 
-	size = size or 300
+	size = size or 100
 
 	local models = {}
 

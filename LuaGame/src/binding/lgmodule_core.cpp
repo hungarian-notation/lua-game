@@ -18,7 +18,10 @@ namespace {
 
 	void include_math(lua_State * L);
 	void include_graphics(lua_State * L);
+
+	int lgapi_clear(lua_State * L);
 }
+
 
 void lgload_luagame(lua_State * L) {
 	register_context(L);
@@ -40,7 +43,8 @@ void lgload_luagame(lua_State * L) {
 
 namespace {
 	void register_context(lua_State * L) {
-		luagame_pushobj<luagame_context>(L, std::make_shared<luagame_context>());
+		std::shared_ptr<luagame_context> context = std::make_shared<luagame_context>();
+		luagame_pushobj<luagame_context>(L, context);
 		lua_setfield(L, LUA_REGISTRYINDEX, LUAGAME_R_CONTEXT);
 	}
 
@@ -55,9 +59,37 @@ namespace {
 	}
 
 	void include_graphics(lua_State * L) {
-		luagame_setfunc(L, "create_texture", &lgapi_create_texture);
-		luagame_setfunc(L, "create_mesh", &lgapi_create_mesh);
-		luagame_setfunc(L, "create_batch", &lgapi_create_batch);
+		luagame_setfunc(L, "create_texture",	&lgapi_create_texture);
+		luagame_setfunc(L, "create_material",	&lgapi_create_material);
+		luagame_setfunc(L, "create_mesh",		&lgapi_create_mesh);
+		luagame_setfunc(L, "create_batch",		&lgapi_create_batch);
+		luagame_setfunc(L, "create_font",		&lgapi_create_font);
+		luagame_setfunc(L, "clear",				&lgapi_clear);
+	}
+
+	static const char * clear_targets[] = {
+		"color_buffer", "depth_buffer",
+		NULL
+	};
+
+	int lgapi_clear(lua_State * L) {
+		int args = lua_gettop(L);
+
+		for (int i = 1; i <= args; ++i) {
+			int opt = luaL_checkoption(L, i, NULL, clear_targets);
+			switch (opt) {
+			case 0: 
+				glClear(GL_COLOR_BUFFER_BIT);
+				break;
+			case 1:
+				glClear(GL_DEPTH_BUFFER_BIT);
+				break;
+			default:
+				luaL_argerror(L, i, "unhandled clear target");
+			}
+		}
+
+		return 0;
 	}
 }
 

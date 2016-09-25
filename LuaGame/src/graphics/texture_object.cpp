@@ -3,16 +3,22 @@
 #include "..\soil\SOIL.h"
 #include "..\filesystem.h"
 
-luagame::texture_object::texture_object(const char * filename) {
-	luagame_check_gl_errors();
 
+luagame::texture_object::texture_object() {
+	glGenTextures(1, &gl_texture);
+}
+
+luagame::texture_object::texture_object(const char * filename) {
 	std::string true_filename = luagame::filesystem::resolve_resource(filename);
 
 	gl_texture = SOIL_load_OGL_texture(
 		true_filename.c_str(),
 		SOIL_LOAD_RGBA,
 		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_TEXTURE_REPEATS
+
+		SOIL_FLAG_MULTIPLY_ALPHA	| 
+		SOIL_FLAG_TEXTURE_REPEATS	| 
+		SOIL_FLAG_MIPMAPS
 	);
 
 	if (!gl_texture) {
@@ -22,7 +28,7 @@ luagame::texture_object::texture_object(const char * filename) {
 
 	luagame_check_gl_errors();
 
-	_log("created texture %d", gl_texture);
+	_log("loaded texture %d from %s", gl_texture, filename);
 }
 
 luagame::texture_object::texture_object(std::string string) : texture_object(string.c_str()) {}

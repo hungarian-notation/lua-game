@@ -7,6 +7,9 @@ namespace luagame {
 	class texture_object {
 	public:
 		
+		// creates an uninitialized texture
+		texture_object();
+
 		texture_object(const char * filename);
 		
 		texture_object(std::string string);

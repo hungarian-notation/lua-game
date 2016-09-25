@@ -5,16 +5,21 @@
 using namespace luagame;
 using namespace glm;
 
+
 namespace {
 int set_texture(lua_State * L);
+int set_material(lua_State * L);
 int append(lua_State * L);
+int append_quad(lua_State * L);
 int draw(lua_State * L);
 }
 
 void luagame_pushmesh(lua_State * L, meshptr mesh) {
 	luaL_Reg functions[] = {
 		{ "set_texture", &set_texture },
+		{ "set_material", &set_material },
 		{ "append", &append },
+		// { "append_quad", &append_quad },
 		{ "draw", &draw },
 
 		{ NULL, NULL }
@@ -35,33 +40,6 @@ int lgapi_create_mesh(lua_State * L) {
 	return 1;
 }
 
-material_object::material_options luagame_tomaterialoptions(lua_State * L, int idx) {
-	material_object::material_options opts = {};
-
-	if (lua_istable(L, idx)) {
-		lua_getfield(L, idx, "use_color");
-		opts.use_color = lua_toboolean(L, -1);
-
-		lua_getfield(L, idx, "use_texture");
-		opts.use_texture = lua_toboolean(L, -1);
-
-		lua_getfield(L, idx, "use_normals");
-		opts.use_normal = lua_toboolean(L, -1);
-
-		lua_getfield(L, idx, "use_transparency");
-		opts.use_transparency = lua_toboolean(L, -1);
-
-		lua_getfield(L, idx, "use_lighting");
-		opts.use_lighting = lua_toboolean(L, -1);
-
-		if (opts.use_lighting) opts.max_lights = 6;
-
-		lua_pop(L, 4);
-	}
-
-	return opts;
-}
-
 namespace {
 int set_texture(lua_State * L) {
 	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
@@ -77,12 +55,32 @@ int set_texture(lua_State * L) {
 	return 0;
 }
 
+int set_material(lua_State * L) {
+	auto mesh = luagame_checkobj<mesh_object>(L, 1);
+
+	if (luagame_isobj<material_object>(L, 2)) {
+		mesh->set_material(luagame_checkobj<material_object>(L, 2));
+	} else if (lua_istable(L, 2)) {
+		mesh->set_material(luagame_tomaterialoptions(L, 2));
+	} else {
+		luaL_argerror(L, 2, "expected material or material options");
+	}
+
+	return 0;
+}
+
 int append(lua_State * L) {
+	if (lua_gettop(L) < 2)
+		return luaL_error(L, "not enough arguments; expected mesh:append({ vertices })");
+	if (lua_gettop(L) > 2)
+		return luaL_error(L, "too many arguments; expected mesh:append({ vertices })");
+	
 	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
 
 	luaL_checktype(L, 2, LUA_TTABLE);
 
 	lua_len(L, 2);
+
 	int length = (int)lua_tointeger(L, -1);
 
 	vertex * vertices = new vertex[length];
@@ -98,7 +96,13 @@ int append(lua_State * L) {
 	delete[] vertices;
 
 	return 0;
+
 }
+
+int append_quad(lua_State * L) {
+	return 0;
+}
+
 
 int draw(lua_State * L) {
 	meshptr mesh = luagame_checkobj<mesh_object>(L, 1);
