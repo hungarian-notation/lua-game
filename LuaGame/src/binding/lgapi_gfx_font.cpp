@@ -10,6 +10,13 @@ int get_size(lua_State * L);
 int get_character(lua_State * L);
 int get_kerning(lua_State * L);
 
+luaL_Reg font_functions[] = {
+	{ "get_size",		get_size },
+	{ "get_character",	get_character },
+	{ "get_kerning",	get_kerning },
+	{ NULL,				NULL }
+};
+
 }
 
 int lgapi_create_font(lua_State * L) {
@@ -20,16 +27,13 @@ int lgapi_create_font(lua_State * L) {
 
 	auto font = std::make_shared<font_object>(&ctx->freetype, font_resource, font_size);
 
-	luaL_Reg functions[] = {
-		{"get_size",		get_size},
-		{"get_character",	get_character},
-		{ "get_kerning",	get_kerning },
-		{NULL,				NULL}
-	};
-
-	luagame_pushobj<font_object>(L, font, functions);
+	luagame_pushobj<font_object>(L, font, font_functions, lgapi_create_font);
 
 	return 1;
+}
+
+void luagame_pushmetafont(lua_State * L) {
+	luagame_pushobjmetatable<font_object>(L, font_functions, lgapi_create_font);
 }
 
 namespace {

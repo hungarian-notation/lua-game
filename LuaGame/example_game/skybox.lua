@@ -37,7 +37,7 @@ local function push_plane(models, texture, origin, exa, exb)
 	vertices[#vertices + 1] = d
 	vertices[#vertices + 1] = a
 
-	local mesh = luagame.create_mesh { use_texture = true, use_depthtest = true }
+	local mesh = luagame.mesh { use_texture = true, use_depthtest = true }
 	mesh:set_texture(texture)
 	mesh:append(vertices)
 

@@ -151,7 +151,9 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\binding\lgapi_gfx_batch.cpp" />
     <ClCompile Include="src\binding\lgapi_gfx_font.cpp" />
-    <ClCompile Include="src\binding\lgapi_gfx_material.cpp" />
+    <ClCompile Include="src\binding\lgapi_gfx_material.cpp">
+      <FileType>CppCode</FileType>
+    </ClCompile>
     <ClCompile Include="src\binding\lgmodule_mouse.cpp" />
     <ClCompile Include="src\binding\luagame_runtime.cpp" />
     <ClCompile Include="src\binding\lgapi_gfx_mesh.cpp" />

@@ -11,7 +11,7 @@ function text.create (str, font, scale)
 
 	for i = 1, #str do
 		local chardata = font:get_character(str:sub(i, i))
-		local quad = luagame.create_mesh { 
+		local quad = luagame.mesh { 
 			use_texture = true, 
 			use_alphamask = true,
 			use_color = true 

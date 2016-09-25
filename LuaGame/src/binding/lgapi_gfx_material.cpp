@@ -1,10 +1,11 @@
 #include "lgapi_gfx.h"
+#include "../graphics/material_object.h"
 
 using namespace luagame;
 
-material_object::material_options luagame_tomaterialoptions(lua_State * L, int idx) {
+luagame::material_object::material_options luagame_tomaterialoptions(lua_State * L, int idx) {
 	material_object::material_options opts = {};
-
+	
 	if (lua_istable(L, idx)) {
 
 		lua_getfield(L, idx, "use_color");
@@ -36,8 +37,12 @@ material_object::material_options luagame_tomaterialoptions(lua_State * L, int i
 	return opts;
 }
 
+void luagame_pushmetamaterial(lua_State * L) {
+	luagame_pushobjmetatable<material_object>(L, nullptr, lgapi_create_material);
+}
+
 void luagame_pushmaterial(lua_State * L, std::shared_ptr<luagame::material_object> material) {
-	luagame_pushobj<material_object>(L, material);
+	luagame_pushobj<material_object>(L, material, nullptr, lgapi_create_material);
 }
 
 int lgapi_create_material(lua_State * L) {

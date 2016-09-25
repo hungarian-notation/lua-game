@@ -7,16 +7,20 @@
 #include "..\graphics\environment_object.h"
 
 int lgapi_create_material(lua_State * L);
+void luagame_pushmetamaterial(lua_State * L);
 
 int lgapi_create_texture(lua_State * L);
-
+void luagame_pushmetatexture(lua_State * L);
 void luagame_pushtexture(lua_State * L, std::shared_ptr<luagame::texture_object> texture);
 
 int lgapi_create_mesh(lua_State * L);
+void luagame_pushmetamesh(lua_State * L);
 
 int lgapi_create_batch(lua_State * L);
+void luagame_pushmetabatch(lua_State * L);
 
 int lgapi_create_font(lua_State * L);
+void luagame_pushmetafont(lua_State * L);
 
 // VERTEX HANDLING
 

@@ -5,38 +5,38 @@
 using namespace luagame;
 using namespace glm;
 
-
 namespace {
+
 int set_texture(lua_State * L);
 int set_material(lua_State * L);
 int append(lua_State * L);
 int append_quad(lua_State * L);
 int draw(lua_State * L);
+
+luaL_Reg mesh_functions[] = {
+	{ "set_texture", &set_texture },
+	{ "set_material", &set_material },
+	{ "append", &append },
+	// { "append_quad", &append_quad },
+	{ "draw", &draw },
+	{ NULL, NULL }
+};
+
+}
+
+void luagame_pushmetamesh(lua_State * L) {
+	luagame_pushobjmetatable<mesh_object>(L, mesh_functions, lgapi_create_mesh);
 }
 
 void luagame_pushmesh(lua_State * L, meshptr mesh) {
-	luaL_Reg functions[] = {
-		{ "set_texture", &set_texture },
-		{ "set_material", &set_material },
-		{ "append", &append },
-		// { "append_quad", &append_quad },
-		{ "draw", &draw },
-
-		{ NULL, NULL }
-	};
-
-	luagame_pushobj<mesh_object>(L, mesh, functions);
+	luagame_pushobj<mesh_object>(L, mesh, mesh_functions, lgapi_create_mesh);
 }
 
 int lgapi_create_mesh(lua_State * L) {
 	material_object::material_options opts = luagame_tomaterialoptions(L, 1);
-
 	auto mesh = std::make_shared<luagame::mesh_object>(&(luagame_getcontext(L)->material_cache), &(luagame_getcontext(L)->texture_cache));
-	
 	mesh->set_material(opts);
-
 	luagame_pushmesh(L, mesh);
-
 	return 1;
 }
 

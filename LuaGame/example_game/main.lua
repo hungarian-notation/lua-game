@@ -80,7 +80,7 @@ function sample_normal (x, y)
 
 	local a_off = a - origin;
 	local b_off = b - origin;
-	
+
 	local cross = a_off:cross(b_off):normalize();
 
 	return cross
@@ -88,16 +88,16 @@ end
 
 function build_ground ()
 
-	local ground_material = luagame.create_material {
+	local ground_material = luagame.material {
 		use_texture = true,
 		use_normals = true,
 		use_lighting = true,
 		use_depthtest = true
 	}
 	
-	local grass_texture = luagame.create_texture("grass.jpg")
+	local grass_texture = luagame.texture("grass.jpg")
 
-	local ground_mesh = luagame.create_mesh()
+	local ground_mesh = luagame.mesh()
 
 
 	ground_mesh:set_texture(grass_texture)
@@ -128,7 +128,7 @@ function build_ground ()
 	
 	print(#vertices)
 
-	ground_mesh:append(vertices)
+	luagame.mesh.append(ground_mesh, vertices)
 
 	return ground_mesh;
 end
@@ -144,8 +144,8 @@ function luagame.load ()
 
 	scene[#scene + 1] = { mesh=build_ground(), matrix=luagame.matrix() }
 
-	font = luagame.create_font("blocktopia.ttf", 32);
-	font = luagame.create_font("Blenda Script.otf", 32);
+	font = luagame.font("blocktopia.ttf", 32);
+	font = luagame.font("Blenda Script.otf", 32);
 
 	local text = require "text"
 
@@ -228,7 +228,7 @@ function luagame.update (dt)
 end
 
 function luagame.draw () 
-	mesh_batch = mesh_batch or luagame.create_batch()
+	mesh_batch = mesh_batch or luagame.batch()
 	
 	mesh_batch:begin(transform.view:get_inverse(), transform.projection, environment)
 	

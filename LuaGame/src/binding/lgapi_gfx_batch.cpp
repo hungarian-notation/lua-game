@@ -15,23 +15,24 @@ int mesh_batch_add(lua_State * L);
 
 int mesh_batch_flush(lua_State * L);
 
+luaL_Reg batch_functions[] = {
+	{ "begin",	mesh_batch_begin },
+	{ "add",	mesh_batch_add },
+	{ "flush",	mesh_batch_flush },
+
+	{ NULL, NULL }
+};
+
 }
 
 int lgapi_create_batch(lua_State * L) {
-
-	luaL_Reg functions[] = {
-		{ "begin",	mesh_batch_begin },
-		{ "add",	mesh_batch_add },
-		{ "flush",	mesh_batch_flush },
-
-		{ NULL, NULL }
-	};
-
 	std::shared_ptr<mesh_batch> batch = std::make_shared<mesh_batch>();
-
-	luagame_pushobj<mesh_batch>(L, batch, functions);
-
+	luagame_pushobj<mesh_batch>(L, batch, batch_functions, lgapi_create_batch);
 	return 1;
+}
+
+void luagame_pushmetabatch(lua_State * L) {
+	luagame_pushobjmetatable<mesh_batch>(L, batch_functions, lgapi_create_batch);
 }
 
 namespace {

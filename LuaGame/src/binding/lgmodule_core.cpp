@@ -59,11 +59,19 @@ namespace {
 	}
 
 	void include_graphics(lua_State * L) {
-		luagame_setfunc(L, "create_texture",	&lgapi_create_texture);
-		luagame_setfunc(L, "create_material",	&lgapi_create_material);
-		luagame_setfunc(L, "create_mesh",		&lgapi_create_mesh);
-		luagame_setfunc(L, "create_batch",		&lgapi_create_batch);
-		luagame_setfunc(L, "create_font",		&lgapi_create_font);
+
+		luagame_pushmetatexture(L);
+		lua_setfield(L, -2, "texture");
+		luagame_pushmetamaterial(L);
+		lua_setfield(L, -2, "material");
+		luagame_pushmetamesh(L);
+		lua_setfield(L, -2, "mesh");
+
+		luagame_pushmetabatch(L);
+		lua_setfield(L, -2, "batch");
+		luagame_pushmetafont(L);
+		lua_setfield(L, -2, "font");
+
 		luagame_setfunc(L, "clear",				&lgapi_clear);
 	}
 
